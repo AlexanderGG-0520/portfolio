@@ -119,6 +119,7 @@ function setOpen(open: boolean, restoreFocus = true) {
   terminal.setAttribute('aria-hidden', open ? 'false' : 'true');
   terminal.toggleAttribute('inert', !open);
   document.documentElement.dataset.terminal = open ? 'open' : 'closed';
+  openers.forEach((opener) => opener.setAttribute('aria-expanded', open ? 'true' : 'false'));
 
   if (open) {
     requestAnimationFrame(() => {
@@ -314,7 +315,7 @@ window.addEventListener('keydown', (event) => {
     return;
   }
 
-  if (isOpen && event.key === 'Tab') {
+  if (isOpen && event.key === 'Tab' && !event.defaultPrevented) {
     const items = terminalFocusableItems();
     if (items.length) {
       const first = items[0];
