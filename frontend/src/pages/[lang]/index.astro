@@ -7,11 +7,13 @@ import EvidenceOperationLayer from '../../components/EvidenceOperationLayer.astr
 import LiveRuntimeLayer from '../../components/LiveRuntimeLayer.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import MobileNavigation from '../../components/MobileNavigation.astro';
+import ReadingModeControl from '../../components/ReadingModeControl.astro';
 import { supportedLocales, type Locale } from '../../i18n/locales';
 import '../../styles/home.css';
 import '../../styles/terminal.css';
 import '../../styles/cta.css';
 import '../../styles/mobile-navigation.css';
+import '../../styles/progressive-disclosure.css';
 
 export function getStaticPaths() {
   return supportedLocales.map((lang) => ({ params: { lang }, props: { lang } }));
@@ -33,6 +35,7 @@ const { lang } = Astro.props;
       <a href="#case-studies">cases</a>
       <a href="#evidence">evidence</a>
       <a href="#runtime">runtime</a>
+      <ReadingModeControl />
       <button type="button" data-terminal-open>terminal ~</button>
       <a href="https://github.com/AlexanderGG-0520" rel="me">github ↗</a>
     </nav>
