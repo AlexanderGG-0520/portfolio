@@ -70,6 +70,9 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Software, through the infrastructure that runs it.'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'id="mobile-navigation"'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-mobile-nav-open'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-toggle'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-inspect'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-inspect-detail'
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \

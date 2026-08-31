@@ -40,23 +40,23 @@ import '../styles/live-runtime.css';
         <dt>orchestrator</dt>
         <dd data-runtime-orchestrator>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>instance</dt>
         <dd data-runtime-instance>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>Go runtime</dt>
         <dd data-runtime-go>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>release</dt>
         <dd data-runtime-version>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>revision</dt>
         <dd data-runtime-revision>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>started at</dt>
         <dd data-runtime-started>--</dd>
       </div>
@@ -64,18 +64,24 @@ import '../styles/live-runtime.css';
         <dt>uptime</dt>
         <dd data-runtime-uptime>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>server time</dt>
         <dd data-runtime-time>--</dd>
       </div>
-      <div>
+      <div data-inspect-detail>
         <dt>source</dt>
         <dd>/api/runtime</dd>
       </div>
     </dl>
   </div>
 
-  <div class="live-runtime-boundaries">
+  <button class="density-expand" type="button" data-view-mode-inspect>
+    <span>inspect</span>
+    <strong>release identity / process start / deployment boundary</strong>
+    <i aria-hidden="true">↓</i>
+  </button>
+
+  <div class="live-runtime-boundaries" data-inspect-detail>
     <section>
       <span>BACKEND RESPONSIBILITY</span>
       <strong>Own runtime truth.</strong>

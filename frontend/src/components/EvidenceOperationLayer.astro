@@ -19,6 +19,12 @@ import '../styles/evidence-operation.css';
     <span>claim</span><i></i><span>implementation</span><i></i><span>failure</span><i></i><span>operation</span>
   </div>
 
+  <button class="density-expand evidence-reveal" type="button" data-view-mode-inspect>
+    <span>inspect</span>
+    <strong>secondary implementation records / regression cases / operational notes</strong>
+    <i aria-hidden="true">↓</i>
+  </button>
+
   <article class="evidence-system evidence-reveal" id="evidence-minecartainer">
     <header class="evidence-system-header">
       <div>
@@ -41,7 +47,7 @@ import '../styles/evidence-operation.css';
         <small>server-install-reinstall-policy.md ↗</small>
       </a>
 
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install_phase.sh">
+      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install_phase.sh">
         <span class="record-type">LIFECYCLE</span>
         <code>install()</code>
         <strong>Installation is an explicit phase, not an accidental side effect of every boot.</strong>
@@ -52,7 +58,7 @@ import '../styles/evidence-operation.css';
         <small>scripts/lib/install_phase.sh ↗</small>
       </a>
 
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/.github/workflows/runtime-smoke.yml">
+      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/.github/workflows/runtime-smoke.yml">
         <span class="record-type">REGRESSION SURFACE</span>
         <code>runtime-smoke.yml</code>
         <strong>Failure paths are executable specifications.</strong>
@@ -63,7 +69,7 @@ import '../styles/evidence-operation.css';
         <small>GitHub Actions workflow ↗</small>
       </a>
 
-      <div class="evidence-record evidence-record-observed">
+      <div class="evidence-record evidence-record-observed" data-inspect-detail>
         <span class="record-type">KUBERNETES OPERATION</span>
         <code>single writer → graceful stop</code>
         <strong>The world outlives the Pod.</strong>
@@ -101,7 +107,7 @@ import '../styles/evidence-operation.css';
         </p>
         <a href="https://github.com/AlexanderGG-0520/mc-router/commit/36c75dcb9535a3f5f173cd19f45587490884940e">open recovery commit ↗</a>
       </div>
-      <div class="incident-black-case" aria-label="Regression black case">
+      <div class="incident-black-case" data-inspect-detail aria-label="Regression black case">
         <span>BLACK CASE</span>
         <p><b>STATUS</b> canonical host → statusBackend</p>
         <p><b>LOGIN</b> explicit alias → normal backend</p>
@@ -109,7 +115,7 @@ import '../styles/evidence-operation.css';
       </div>
     </div>
 
-    <div class="evidence-grid evidence-grid-router">
+    <div class="evidence-grid evidence-grid-router" data-inspect-detail>
       <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#how-java-routing-works">
         <span class="record-type">PROTOCOL BOUNDARY</span>
         <code>handshake → opaque TCP</code>
@@ -181,7 +187,7 @@ import '../styles/evidence-operation.css';
       </div>
     </div>
 
-    <div class="operation-ledger">
+    <div class="operation-ledger" data-inspect-detail>
       <section>
         <span>REBUILDABILITY</span>
         <strong>From guided install to repeatable procedure.</strong>
