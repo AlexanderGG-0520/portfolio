@@ -1,0 +1,94 @@
+/* Hero action affordance.
+ * Keep the terminal/workstation visual language, but make the primary action unmistakably clickable.
+ */
+
+.home-actions {
+  gap: 14px;
+  align-items: center;
+}
+
+.home-actions .terminal-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: .79rem;
+  line-height: 1;
+}
+
+.home-actions .terminal-link:first-child {
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid rgb(137 180 250 / .52);
+  border-radius: 7px;
+  color: var(--text);
+  background: rgb(137 180 250 / .045);
+  box-shadow: 0 0 0 1px rgb(137 180 250 / .025) inset;
+  font-weight: 600;
+  transition:
+    color .16s var(--ease),
+    border-color .16s var(--ease),
+    background .16s var(--ease),
+    box-shadow .16s var(--ease),
+    transform .16s var(--ease);
+}
+
+.home-actions .terminal-link:first-child span {
+  margin-left: 0;
+  color: var(--blue);
+  transition: transform .16s var(--ease);
+}
+
+.home-actions .terminal-link:first-child:hover {
+  color: var(--text);
+  border-color: var(--blue);
+  background: rgb(137 180 250 / .085);
+  box-shadow:
+    0 8px 28px rgb(0 0 0 / .18),
+    0 0 0 1px rgb(137 180 250 / .045) inset;
+  transform: translate3d(0, -1px, 0);
+}
+
+.home-actions .terminal-link:first-child:hover span {
+  transform: translate3d(3px, 0, 0);
+}
+
+.home-actions .terminal-link:last-child {
+  gap: 8px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--subtext-1);
+  background: transparent;
+  transition:
+    color .16s var(--ease),
+    background .16s var(--ease),
+    transform .16s var(--ease);
+}
+
+.home-actions .terminal-link:last-child span {
+  margin-left: 0;
+  color: var(--mauve);
+}
+
+.home-actions .terminal-link:last-child:hover {
+  color: var(--text);
+  background: rgb(69 71 90 / .16);
+  transform: translate3d(2px, 0, 0);
+}
+
+.home-actions .terminal-link:focus-visible {
+  outline: 2px solid rgb(137 180 250 / .72);
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .home-actions {
+    gap: 8px;
+  }
+
+  .home-actions .terminal-link:first-child {
+    padding-inline: 14px;
+  }
+}
