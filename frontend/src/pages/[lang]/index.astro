@@ -8,7 +8,7 @@ import LiveRuntimeLayer from '../../components/LiveRuntimeLayer.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import MobileNavigation from '../../components/MobileNavigation.astro';
 import ReadingModeControl from '../../components/ReadingModeControl.astro';
-import { supportedLocales, type Locale } from '../../i18n/locales';
+import { alternateLocale, supportedLocales, type Locale } from '../../i18n/locales';
 import '../../styles/home.css';
 import '../../styles/terminal.css';
 import '../../styles/cta.css';
@@ -24,99 +24,99 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+const ja = lang === 'ja';
+const otherLocale = alternateLocale(lang);
+const c = ja
+  ? {
+      title: 'Alec — バックエンド / インフラ / システムエンジニアリング',
+      description: 'AlecのBackend / Infrastructure / Systems Engineeringポートフォリオ。ソフトウェアを実際の運用基盤まで含めたシステムとして設計・実装・運用しています。',
+      backTop: 'トップへ戻る',
+      navAria: 'メインナビゲーション',
+      system: 'system', cases: 'cases', evidence: 'evidence', runtime: 'runtime', terminal: 'terminal ~', github: 'github ↗', locale: 'en',
+      backendAria: 'Portfolio backendの状態',
+      role: 'Backend / Infrastructure / Systems Engineering',
+      hero1: 'コードから、', hero2: '稼働するシステムまで。',
+      thesis: 'ソフトウェアを、実際に動かすinfrastructureまで含めた一つのシステムとして設計・実装・運用しています。',
+      actionsAria: 'トップページの操作', trace: 'アーキテクチャを辿る', openTerminal: 'terminalを開く',
+      fieldAria: 'Alecのsoftware system layer',
+      routerKind: '01 / edge', routerDetail: 'tcp · Java handshake · :25565',
+      kubeKind: '02 / platform', kubeDetail: 'reconcile · network · storage',
+      mineKind: '03 / runtime', mineDetail: 'stateful workload lifecycle',
+      portfolioKind: '04 / このサイト', portfolioDetail: 'Astro ↔ Go API',
+      readHandshake: '↳ protocol / handshake', readReconcile: '↳ desired → ready', readState: '↳ pvc / persistent state',
+      signal: 'signal field / live system', scroll: '下へスクロールして掘り下げる',
+    }
+  : {
+      title: 'Alec — Backend / Infrastructure / Systems Engineering',
+      description: 'Alec — Backend, Infrastructure and Systems Engineering portfolio.',
+      backTop: 'Back to top',
+      navAria: 'Primary navigation',
+      system: 'system', cases: 'cases', evidence: 'evidence', runtime: 'runtime', terminal: 'terminal ~', github: 'github ↗', locale: 'ja',
+      backendAria: 'Portfolio backend status',
+      role: 'Backend / Infrastructure / Systems Engineering',
+      hero1: 'From code', hero2: 'to running system.',
+      thesis: 'I build software as complete systems, through the infrastructure that runs them.',
+      actionsAria: 'Homepage actions', trace: 'trace architecture', openTerminal: 'open terminal',
+      fieldAria: "Alec's software system layers",
+      routerKind: '01 / edge', routerDetail: 'tcp · java handshake · :25565',
+      kubeKind: '02 / platform', kubeDetail: 'reconcile · network · storage',
+      mineKind: '03 / runtime', mineDetail: 'stateful workload lifecycle',
+      portfolioKind: '04 / this site', portfolioDetail: 'Astro ↔ Go API',
+      readHandshake: '↳ protocol / handshake', readReconcile: '↳ desired → ready', readState: '↳ pvc / persistent state',
+      signal: 'signal field / live system', scroll: 'scroll to descend',
+    };
 ---
 
-<BaseLayout title="Alec — Backend / Infrastructure / Systems Engineering" design="c" lang={lang}>
+<BaseLayout title={c.title} description={c.description} design="c" lang={lang}>
   <header class="home-header shell">
-    <a class="home-brand" href="#top" aria-label="Back to top">alec<span>@portfolio</span></a>
+    <a class="home-brand" href="#top" aria-label={c.backTop}>alec<span>@portfolio</span></a>
 
-    <nav class="home-nav" aria-label="Primary navigation">
-      <a href="#architecture">system</a>
-      <a href="#case-studies">cases</a>
-      <a href="#evidence">evidence</a>
-      <a href="#runtime">runtime</a>
-      <ReadingModeControl />
-      <button type="button" data-terminal-open>terminal ~</button>
-      <a href="https://github.com/AlexanderGG-0520" rel="me">github ↗</a>
+    <nav class="home-nav" aria-label={c.navAria}>
+      <a href="#architecture">{c.system}</a>
+      <a href="#case-studies">{c.cases}</a>
+      <a href="#evidence">{c.evidence}</a>
+      <a href="#runtime">{c.runtime}</a>
+      <ReadingModeControl lang={lang} />
+      <button type="button" data-terminal-open>{c.terminal}</button>
+      <a href={`/${otherLocale}/`} hreflang={otherLocale}>{c.locale}</a>
+      <a href="https://github.com/AlexanderGG-0520" rel="me">{c.github}</a>
     </nav>
 
-    <div class="home-runtime" aria-label="Portfolio backend status">
-      <span class="status-dot"></span>
-      <span>backend:</span>
-      <span data-api-status>connecting</span>
-    </div>
-
-    <MobileNavigation />
+    <div class="home-runtime" aria-label={c.backendAria}><span class="status-dot"></span><span>backend:</span><span data-api-status>connecting</span></div>
+    <MobileNavigation lang={lang} />
   </header>
 
   <main id="top" class="home-main">
     <section class="home-hero shell" aria-labelledby="hero-title">
-      <div class="home-command prompt fish-hero-prompt" aria-hidden="true">
-        <span>~/portfolio</span> <b>❯</b> trace --system
-      </div>
-
+      <div class="home-command prompt fish-hero-prompt" aria-hidden="true"><span>~/portfolio</span> <b>❯</b> trace --system</div>
       <div class="home-copy">
-        <p class="eyebrow" data-profile-role>Backend / Infrastructure / Systems Engineering</p>
-        <h1 id="hero-title">From code<br />to running system.</h1>
-        <p class="lede" data-profile-thesis>
-          I build software as complete systems, through the infrastructure that runs them.
-        </p>
-
-        <div class="home-actions" aria-label="Homepage actions">
-          <a class="terminal-link" href="#architecture" data-architecture-trigger>trace architecture <span>→</span></a>
-          <button class="terminal-link" type="button" data-terminal-open>open terminal <span>_</span></button>
+        <p class="eyebrow">{c.role}</p>
+        <h1 id="hero-title">{c.hero1}<br />{c.hero2}</h1>
+        <p class="lede">{c.thesis}</p>
+        <div class="home-actions" aria-label={c.actionsAria}>
+          <a class="terminal-link" href="#architecture" data-architecture-trigger>{c.trace} <span>→</span></a>
+          <button class="terminal-link" type="button" data-terminal-open>{c.openTerminal} <span>_</span></button>
         </div>
       </div>
 
-      <div id="system" class="system-field" aria-label="Alec's software system layers">
-        <div class="field-ring field-ring-inner" aria-hidden="true"></div>
-        <div class="field-axis axis-a" aria-hidden="true"></div>
-        <div class="field-axis axis-b" aria-hidden="true"></div>
-        <div class="field-pulse pulse-a" aria-hidden="true"></div>
-        <div class="field-pulse pulse-b" aria-hidden="true"></div>
-
-        <div class="system-object object-router">
-          <span class="object-kind">01 / edge</span>
-          <strong>mc-router</strong>
-          <span class="object-detail">tcp · java handshake · :25565</span>
-        </div>
-
-        <div class="system-object object-kubernetes">
-          <span class="object-kind">02 / platform</span>
-          <strong>Kubernetes</strong>
-          <span class="object-detail">reconcile · network · storage</span>
-        </div>
-
-        <div class="system-object object-minecartainer">
-          <span class="object-kind">03 / runtime</span>
-          <strong>Minecartainer</strong>
-          <span class="object-detail">stateful workload lifecycle</span>
-        </div>
-
-        <div class="system-object object-portfolio">
-          <span class="object-kind">04 / this site</span>
-          <strong>Portfolio</strong>
-          <span class="object-detail">Astro ↔ Go API</span>
-        </div>
-
-        <span class="field-readout readout-handshake">↳ protocol / handshake</span>
-        <span class="field-readout readout-reconcile">↳ desired → ready</span>
-        <span class="field-readout readout-state">↳ pvc / persistent state</span>
+      <div id="system" class="system-field" aria-label={c.fieldAria}>
+        <div class="field-ring field-ring-inner" aria-hidden="true"></div><div class="field-axis axis-a" aria-hidden="true"></div><div class="field-axis axis-b" aria-hidden="true"></div><div class="field-pulse pulse-a" aria-hidden="true"></div><div class="field-pulse pulse-b" aria-hidden="true"></div>
+        <div class="system-object object-router"><span class="object-kind">{c.routerKind}</span><strong>mc-router</strong><span class="object-detail">{c.routerDetail}</span></div>
+        <div class="system-object object-kubernetes"><span class="object-kind">{c.kubeKind}</span><strong>Kubernetes</strong><span class="object-detail">{c.kubeDetail}</span></div>
+        <div class="system-object object-minecartainer"><span class="object-kind">{c.mineKind}</span><strong>Minecartainer</strong><span class="object-detail">{c.mineDetail}</span></div>
+        <div class="system-object object-portfolio"><span class="object-kind">{c.portfolioKind}</span><strong>Portfolio</strong><span class="object-detail">{c.portfolioDetail}</span></div>
+        <span class="field-readout readout-handshake">{c.readHandshake}</span><span class="field-readout readout-reconcile">{c.readReconcile}</span><span class="field-readout readout-state">{c.readState}</span>
       </div>
 
-      <div class="home-footnote" aria-hidden="true">
-        <span>signal field / live system</span>
-        <span class="footnote-line"></span>
-        <span>scroll to descend</span>
-      </div>
+      <div class="home-footnote" aria-hidden="true"><span>{c.signal}</span><span class="footnote-line"></span><span>{c.scroll}</span></div>
     </section>
 
-    <ArchitectureLayer />
-    <CaseStudiesLayer />
-    <EvidenceOperationLayer />
-    <LiveRuntimeLayer />
+    <ArchitectureLayer lang={lang} />
+    <CaseStudiesLayer lang={lang} />
+    <EvidenceOperationLayer lang={lang} />
+    <LiveRuntimeLayer lang={lang} />
   </main>
 
-  <SiteFooter />
-  <TerminalPanel />
+  <SiteFooter lang={lang} />
+  <TerminalPanel lang={lang} />
 </BaseLayout>
