@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import '../styles/readability.css';
 import '../styles/locale.css';
+import '../styles/background-stability.css';
 
 interface Props {
   title: string;
@@ -31,9 +32,13 @@ const {
     <title>{title}</title>
   </head>
   <body data-design={design}>
-    <canvas id="gpu-background" class="gpu-background" aria-hidden="true"></canvas>
-    <div class="pointer-glow" aria-hidden="true"></div>
-    <slot />
+    <div class="viewport-background" aria-hidden="true">
+      <canvas id="gpu-background" class="gpu-background"></canvas>
+      <div class="pointer-glow"></div>
+    </div>
+    <div class="site-surface">
+      <slot />
+    </div>
     <script>
       import '../scripts/gpu-background.ts';
       import '../scripts/runtime.ts';

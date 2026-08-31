@@ -1,0 +1,57 @@
+/*
+ * Viewport background contract.
+ *
+ * The GPU canvas and pointer glow are one explicit fixed layer above the page
+ * base color and below all site content. Do not rely on negative z-index
+ * descendants competing with the body's opaque background: mobile browsers can
+ * expose that differently when layout and visual viewports diverge.
+ */
+
+body {
+  position: relative;
+  isolation: isolate;
+}
+
+.viewport-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--crust);
+}
+
+.viewport-background .gpu-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+}
+
+.viewport-background .pointer-glow {
+  position: absolute;
+  z-index: 1;
+}
+
+.site-surface {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/*
+ * On touch-first compact layouts the animated background is atmosphere only.
+ * Keep it subtle and remove the pointer-follow effect, which has no meaningful
+ * hover interaction on these devices.
+ */
+@media (max-width: 1180px), (hover: none) and (pointer: coarse) {
+  .viewport-background .gpu-background {
+    opacity: .28;
+  }
+
+  .viewport-background .pointer-glow {
+    display: none;
+  }
+}
