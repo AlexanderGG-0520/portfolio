@@ -1,6 +1,6 @@
 # Local development
 
-The design prototypes intentionally run through a real Go backend. No Docker image is required at this stage.
+Local development runs the built Astro frontend through the real Go backend. Docker is not required for the local development loop; the production container remains available for container-level verification.
 
 ## Prerequisites
 
@@ -15,6 +15,8 @@ git pull
 make install
 make dev
 ```
+
+`make install` uses `npm ci` against the committed `frontend/package-lock.json`. If `package.json` and the lockfile disagree, installation fails instead of resolving a different dependency graph.
 
 Then open <http://127.0.0.1:8080>.
 
