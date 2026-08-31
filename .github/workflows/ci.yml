@@ -53,6 +53,9 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'lang="en"'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The architecture'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Home Kubernetes Platform'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Operational evidence is not'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '36c75dc'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '.server-install.json'
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
