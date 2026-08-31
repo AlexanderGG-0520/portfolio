@@ -26,23 +26,33 @@ if (canvas) {
 
       void main() {
         vec2 cssPosition = gl_FragCoord.xy / pixelRatio;
-        float shortSide = max(min(cssResolution.x, cssResolution.y), 1.0);
-        vec2 centered = (cssPosition - cssResolution * .5) / shortSide;
+
+        /*
+         * Use top-left-anchored CSS-pixel coordinates for every spatial effect.
+         * Viewport dimensions may change the visible area, but must never act as
+         * a divisor that changes the wavelength / apparent zoom of the field.
+         */
+        vec2 anchoredCss = vec2(cssPosition.x, cssResolution.y - cssPosition.y);
         float t = time * .08;
 
         /*
-         * Grid spacing is expressed in CSS pixels, not as N cells per axis.
-         * Compact mode keeps motion interesting with a slow translation while
-         * avoiding phase changes that make the whole field appear to breathe.
+         * Grid spacing and movement are both expressed in CSS pixels. Resizing
+         * only reveals more or fewer cells; one cell never changes size.
          */
         float cellSize = variant > 2.5 ? 84.0 : 64.0;
         float gridSpeed = mix(1.0, .28, compactMode);
-        float g = gridCss(cssPosition + vec2(t * 18.0 * gridSpeed, 0.0), cellSize) * .055;
+        float g = gridCss(anchoredCss + vec2(t * 18.0 * gridSpeed, 0.0), cellSize) * .055;
 
         float pointerDistance = distance(cssPosition, pointerCss);
         float glow = 32.0 / max(pointerDistance, 32.0);
+
+        /*
+         * Wave wavelengths are fixed CSS-pixel lengths too. Compact mode keeps
+         * the spatial tint but freezes its phase; desktop may animate the phase.
+         * Critically, no viewport width/height participates in spatial scaling.
+         */
         float wavePhase = compactMode > .5 ? 0.0 : t * 3.0;
-        float wave = sin((centered.x * 8.0 + centered.y * 5.0) + wavePhase) * .5 + .5;
+        float wave = sin((anchoredCss.x / 112.0) + (anchoredCss.y / 176.0) + wavePhase) * .5 + .5;
         vec3 base = vec3(0.067, 0.067, 0.106);
         vec3 blue = vec3(0.537, 0.706, 0.980);
         vec3 mauve = vec3(0.796, 0.651, 0.969);
