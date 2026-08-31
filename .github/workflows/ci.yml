@@ -56,37 +56,57 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q '"instance":"github-actions"'
           curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q "$GITHUB_SHA"
 
-          curl --fail --silent http://127.0.0.1:8080/ | grep -q '/en/'
-          curl --fail --silent http://127.0.0.1:8080/ | grep -q '/ja/'
+          root_html="$(curl --fail --silent http://127.0.0.1:8080/)"
+          printf '%s' "$root_html" | grep -q '/en/'
+          printf '%s' "$root_html" | grep -q '/ja/'
+          printf '%s' "$root_html" | grep -q 'name="robots" content="index,follow"'
+          if printf '%s' "$root_html" | grep -qi 'noindex'; then
+            echo 'public root must never contain noindex' >&2
+            exit 1
+          fi
 
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'From code'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'lang="en"'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The architecture'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Home Kubernetes Platform'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Operational evidence is not'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The browser asks.'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '/ja/'
+          en_html="$(curl --fail --silent http://127.0.0.1:8080/en/)"
+          printf '%s' "$en_html" | grep -q 'From code'
+          printf '%s' "$en_html" | grep -q 'lang="en"'
+          printf '%s' "$en_html" | grep -q 'name="robots" content="index,follow"'
+          if printf '%s' "$en_html" | grep -qi 'noindex'; then
+            echo '/en/ must never contain noindex' >&2
+            exit 1
+          fi
+          printf '%s' "$en_html" | grep -q 'The architecture'
+          printf '%s' "$en_html" | grep -q 'Home Kubernetes Platform'
+          printf '%s' "$en_html" | grep -q 'Operational evidence is not'
+          printf '%s' "$en_html" | grep -q 'The browser asks.'
+          printf '%s' "$en_html" | grep -q '/ja/'
 
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'lang="ja"'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'コードから'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '一つのシステム'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'アーキテクチャを具体化する'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '基盤ごと乗り換える'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '運用の証拠はそうじゃない'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'ブラウザが問い'
-          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '/en/'
+          ja_html="$(curl --fail --silent http://127.0.0.1:8080/ja/)"
+          printf '%s' "$ja_html" | grep -q 'lang="ja"'
+          printf '%s' "$ja_html" | grep -q 'name="robots" content="index,follow"'
+          if printf '%s' "$ja_html" | grep -qi 'noindex'; then
+            echo '/ja/ must never contain noindex' >&2
+            exit 1
+          fi
+          printf '%s' "$ja_html" | grep -q 'コードから'
+          printf '%s' "$ja_html" | grep -q '一つのシステム'
+          printf '%s' "$ja_html" | grep -q 'アーキテクチャを具体化する'
+          printf '%s' "$ja_html" | grep -q '基盤ごと乗り換える'
+          printf '%s' "$ja_html" | grep -q '運用の証拠はそうじゃない'
+          printf '%s' "$ja_html" | grep -q 'ブラウザが問い'
+          printf '%s' "$ja_html" | grep -q '/en/'
 
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'GET'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '/api/runtime'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '36c75dc'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '.server-install.json'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'trace complete'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Software, through the infrastructure that runs it.'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'id="mobile-navigation"'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-mobile-nav-open'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-toggle'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-inspect'
-          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-inspect-detail'
+          curl --fail --silent http://127.0.0.1:8080/robots.txt | grep -q '^Allow: /$'
+
+          printf '%s' "$en_html" | grep -q 'GET'
+          printf '%s' "$en_html" | grep -q '/api/runtime'
+          printf '%s' "$en_html" | grep -q '36c75dc'
+          printf '%s' "$en_html" | grep -q '.server-install.json'
+          printf '%s' "$en_html" | grep -q 'trace complete'
+          printf '%s' "$en_html" | grep -q 'Software, through the infrastructure that runs it.'
+          printf '%s' "$en_html" | grep -q 'id="mobile-navigation"'
+          printf '%s' "$en_html" | grep -q 'data-mobile-nav-open'
+          printf '%s' "$en_html" | grep -q 'data-view-mode-toggle'
+          printf '%s' "$en_html" | grep -q 'data-view-mode-inspect'
+          printf '%s' "$en_html" | grep -q 'data-inspect-detail'
 
           curl --fail --silent \
             -H 'Content-Type: application/json' \
@@ -101,7 +121,9 @@ jobs:
             -d '{"command":"runtime","cwd":"/"}' \
             http://127.0.0.1:8080/api/terminal | grep -q 'GET /api/runtime'
 
-          curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
+          design_a="$(curl --fail --silent http://127.0.0.1:8080/design/a/)"
+          printf '%s' "$design_a" | grep -q 'Focus Pane'
+          printf '%s' "$design_a" | grep -q 'name="robots" content="noindex,nofollow"'
           curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
           curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'
 
@@ -140,4 +162,6 @@ jobs:
           curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q '"environment":"ci"'
           curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q '"orchestrator":"docker"'
           curl --fail --silent http://127.0.0.1:18080/en/ | grep -q 'From code'
+          curl --fail --silent http://127.0.0.1:18080/en/ | grep -q 'name="robots" content="index,follow"'
           curl --fail --silent http://127.0.0.1:18080/ja/ | grep -q 'コードから'
+          curl --fail --silent http://127.0.0.1:18080/ja/ | grep -q 'name="robots" content="index,follow"'
