@@ -2,76 +2,74 @@
 import '../styles/evidence-operation.css';
 ---
 
-<section id="evidence" class="evidence-layer shell" data-evidence-layer aria-labelledby="evidence-title">
-  <header class="evidence-heading evidence-reveal">
+<section id="evidence" class="evidence-layer shell" aria-labelledby="evidence-title">
+  <div class="evidence-heading evidence-reveal">
     <div>
-      <span class="evidence-index">03 / evidence & operation</span>
+      <span class="evidence-index">03 / EVIDENCE & OPERATION</span>
       <h2 id="evidence-title">Design claims are cheap.<br />Operational evidence is not.</h2>
     </div>
     <p>
-      This layer ties the previous case studies to concrete repository artifacts, regression history and the runtime
-      topology I actually operate. The goal is not to dump implementation details; it is to show where each design
-      principle becomes enforceable.
+      The previous layer explains why these systems exist. This layer connects those claims to code paths, failure cases,
+      regression history and the infrastructure that still has to run.
     </p>
-  </header>
+  </div>
 
-  <div class="evidence-trace evidence-reveal" aria-label="Evidence flow">
-    <span>claim</span><i></i><span>implementation</span><i></i><span>failure</span><i></i><span>operation</span>
+  <div class="evidence-trace evidence-reveal" aria-hidden="true">
+    <span>design claim</span><i></i><span>implementation</span><i></i><span>failure</span><i></i><span>operation</span>
   </div>
 
   <article class="evidence-system evidence-reveal" id="evidence-minecartainer">
     <header class="evidence-system-header">
       <div>
-        <span class="evidence-kind">01 / STATEFUL RUNTIME</span>
+        <span class="evidence-kind">STATEFUL RUNTIME</span>
         <h3>Minecartainer</h3>
       </div>
-      <p>Persistent-state safety is represented by state records, explicit transitions and tests that expect refusal.</p>
+      <p>Persistent-state safety is encoded in files, startup policy, shutdown behavior and executable failure paths.</p>
     </header>
 
     <div class="evidence-grid">
       <a class="evidence-record evidence-record-primary" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/docs/server-install-reinstall-policy.md">
-        <span class="record-type">STATE CONTRACT</span>
+        <span class="record-type">PERSISTED STATE</span>
         <code>/data/.server-install.json</code>
-        <strong>Configuration drift fails before managed state is replaced.</strong>
+        <strong>Managed install identity survives container replacement.</strong>
         <p>
-          The marker records <code>artifact</code>, <code>type</code>, <code>version</code> and <code>build</code>. A valid
-          mismatch fails by default; <code>FORCE_REINSTALL=true</code> is an explicit operator decision and still does not
-          delete worlds, mods, plugins or configuration.
+          artifact / type / version / build are persisted with the world-facing volume so a new container does not guess
+          what already exists.
         </p>
-        <small>server-install-reinstall-policy.md ↗</small>
+        <small>source → server install / reinstall policy ↗</small>
       </a>
 
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install_phase.sh">
-        <span class="record-type">LIFECYCLE</span>
+      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install.sh">
+        <span class="record-type">IMPLEMENTATION</span>
         <code>install()</code>
-        <strong>Installation is an explicit phase, not an accidental side effect of every boot.</strong>
+        <strong>Configuration drift is rejected before runtime begins.</strong>
         <p>
-          Server artifacts, worlds, mods, datapacks, configs and plugins pass through a named install pipeline with
-          pre/post boundaries before the runtime takes over.
+          A valid managed marker that disagrees with requested server identity fails by default. Reinstallation requires
+          explicit intent instead of silently mutating durable state.
         </p>
-        <small>scripts/lib/install_phase.sh ↗</small>
+        <small>source → scripts/lib/install.sh ↗</small>
       </a>
 
       <a class="evidence-record" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/.github/workflows/runtime-smoke.yml">
-        <span class="record-type">REGRESSION SURFACE</span>
+        <span class="record-type">EXECUTABLE CONTRACT</span>
         <code>runtime-smoke.yml</code>
-        <strong>Failure paths are executable specifications.</strong>
+        <strong>Failure paths are tested as part of the product contract.</strong>
         <p>
-          Runtime CI exercises lifecycle regressions such as install-only behavior, RCON safety, managed marker
-          mismatches, bring-your-own artifacts and ownership-sensitive modpack behavior.
+          Runtime CI covers invalid state and lifecycle behavior instead of treating only the happy-path server launch as
+          success.
         </p>
-        <small>GitHub Actions workflow ↗</small>
+        <small>source → GitHub Actions workflow ↗</small>
       </a>
 
       <div class="evidence-record evidence-record-observed">
-        <span class="record-type">KUBERNETES OPERATION</span>
-        <code>single writer → graceful stop</code>
-        <strong>The world outlives the Pod.</strong>
+        <span class="record-type">OPERATION</span>
+        <code>Kubernetes / PVC</code>
+        <strong>Single-writer state and graceful termination shape deployment policy.</strong>
         <p>
-          Maintained deployment patterns use persistent storage, conservative replacement, readiness and a bounded
-          Minecraft-aware shutdown path instead of treating the JVM as disposable state.
+          A disposable Pod can be recreated; the world cannot. Recreate strategy, readiness, RCON save/stop and sufficient
+          termination grace make that asymmetry explicit in operation.
         </p>
-        <small>operational model / documented in repository</small>
+        <small>observed runtime policy</small>
       </div>
     </div>
   </article>
@@ -79,104 +77,117 @@ import '../styles/evidence-operation.css';
   <article class="evidence-system evidence-reveal" id="evidence-mc-router">
     <header class="evidence-system-header">
       <div>
-        <span class="evidence-kind">02 / NETWORK EDGE</span>
+        <span class="evidence-kind">NETWORK EDGE</span>
         <h3>mc-router</h3>
       </div>
-      <p>The strongest evidence is not a feature list. It is a production regression that changed the architecture.</p>
+      <p>The strongest evidence for a responsibility boundary is the production regression that crossed it.</p>
     </header>
 
     <div class="incident-record" data-incident-record>
       <div class="incident-meta">
-        <span>RECOVERY COMMIT</span>
+        <span>INCIDENT / RECOVERY</span>
         <code>36c75dc</code>
-        <time datetime="2026-08-23">2026-08-23</time>
+        <time datetime="2026-08-24">2026-08-24</time>
       </div>
+
       <div class="incident-copy">
-        <span class="incident-state">STATUS ROUTING REGRESSION → RESPONSIBILITY BOUNDARY</span>
-        <h4>Restore Java routing semantics and observability.</h4>
+        <span class="incident-state">STATUS ROUTING REGRESSION</span>
+        <h4>Router-owned monitoring state had begun to influence player-facing STATUS semantics.</h4>
         <p>
-          Router-owned monitoring state had started influencing Minecraft STATUS behavior. Recovery restored explicit
-          precedence — <code>statusOverride → statusBackend → backend</code> — while LOGIN and Transfer stayed on the
-          normal backend, and removed monitoring state from STATUS response control.
+          The recovery restored explicit STATUS precedence, kept LOGIN / Transfer on the normal backend, removed monitored
+          availability as an implicit response authority and expanded structured observability around route selection.
         </p>
-        <a href="https://github.com/AlexanderGG-0520/mc-router/commit/36c75dcb9535a3f5f173cd19f45587490884940e">open recovery commit ↗</a>
+        <a href="https://github.com/AlexanderGG-0520/mc-router/commit/36c75dc">open recovery commit ↗</a>
       </div>
-      <div class="incident-black-case" aria-label="Regression black case">
-        <span>BLACK CASE</span>
-        <p><b>STATUS</b> canonical host → statusBackend</p>
-        <p><b>LOGIN</b> explicit alias → normal backend</p>
-        <p><b>FALLBACK</b> must not overwrite healthy statusBackend</p>
+
+      <div class="incident-black-case">
+        <span>REGRESSION BLACK CASE</span>
+        <p>
+          canonical STATUS → <b>statusBackend</b><br />
+          alias LOGIN → <b>normal backend</b><br />
+          fallback → must not overwrite <b>statusBackend</b>
+        </p>
       </div>
     </div>
 
     <div class="evidence-grid evidence-grid-router">
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#how-java-routing-works">
+      <div class="evidence-record evidence-record-observed">
         <span class="record-type">PROTOCOL BOUNDARY</span>
-        <code>handshake → opaque TCP</code>
-        <strong>Parse only what is needed to route.</strong>
+        <code>Java handshake → opaque TCP</code>
+        <strong>Parse only enough protocol to choose a route.</strong>
         <p>
-          Normal Java traffic reads the initial handshake for host identity and next state, forwards the original bytes,
-          then stops interpreting gameplay traffic.
+          The normal Java path inspects the initial handshake, forwards it unchanged, then stops understanding gameplay
+          traffic.
         </p>
-        <small>routing model ↗</small>
-      </a>
+        <small>routing boundary</small>
+      </div>
 
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#explicit-yaml-first-discovery-second">
-        <span class="record-type">ROUTE MODEL</span>
-        <code>static + discovered → snapshot</code>
-        <strong>Kubernetes discovery feeds routing; it does not redefine routing semantics.</strong>
+      <div class="evidence-record evidence-record-observed">
+        <span class="record-type">DISCOVERY BOUNDARY</span>
+        <code>providers → route snapshot</code>
+        <strong>Discovery updates configuration; it does not invent routing semantics.</strong>
         <p>
-          Static YAML and discovered Services converge on the same route model so the network core remains testable
-          independently of the cluster control plane.
+          Static YAML and Kubernetes Service discovery feed the same immutable route model, with last-known-good behavior
+          during discovery failures.
         </p>
-        <small>design rationale ↗</small>
-      </a>
+        <small>runtime route model</small>
+      </div>
 
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#keep-workload-lifecycle-outside-routing-correctness">
-        <span class="record-type">CONTROL BOUNDARY</span>
-        <code>route decision ≠ lifecycle authority</code>
-        <strong>Optional control integrations cannot become implicit route truth.</strong>
+      <div class="evidence-record evidence-record-observed">
+        <span class="record-type">CONTROL PLANE</span>
+        <code>monitoring / scaler / companions</code>
+        <strong>Optional control features remain outside core routing correctness.</strong>
         <p>
-          Scaler hooks, availability observations and Hub notifications can consume or emit control-plane information
-          without silently changing the selected backend.
+          Monitoring can describe availability, a scaler can request lifecycle work and protocol companions can add state,
+          but none silently redefine the Java routing contract.
         </p>
-        <small>responsibility boundary ↗</small>
-      </a>
+        <small>responsibility invariant</small>
+      </div>
     </div>
   </article>
 
-  <article class="evidence-system evidence-reveal" id="evidence-home-platform">
+  <article class="evidence-system evidence-reveal" id="evidence-platform">
     <header class="evidence-system-header">
       <div>
-        <span class="evidence-kind">03 / INFRASTRUCTURE</span>
+        <span class="evidence-kind">INFRASTRUCTURE / OPERATION</span>
         <h3>Home Kubernetes Platform</h3>
       </div>
-      <p>This evidence is operational rather than a public repository: a real cluster with explicit limits and rebuildable layers.</p>
+      <p>There is no public repository to point at here. The evidence is the topology and the operational capability it enables.</p>
     </header>
 
-    <div class="runtime-topology" aria-label="Current home platform runtime topology">
+    <div class="runtime-topology" aria-label="Current home platform topology">
+      <span>PHYSICAL FAILURE DOMAIN</span>
       <div class="runtime-host">
-        <span>PHYSICAL FAILURE DOMAIN</span>
-        <strong>1 host</strong>
-        <small>current constraint / not HA</small>
+        <span>HOST</span>
+        <strong>1 physical server</strong>
+        <small>current failure domain</small>
       </div>
-      <div class="runtime-arrow" aria-hidden="true">↓</div>
-      <div class="runtime-layer runtime-proxmox">
+      <div class="runtime-arrow">↓</div>
+      <div class="runtime-layer">
         <span>VIRTUALIZATION</span>
         <strong>Proxmox VE</strong>
         <small>VM lifecycle boundary</small>
       </div>
-      <div class="runtime-arrow" aria-hidden="true">↓</div>
+      <div class="runtime-arrow">↓</div>
       <div class="runtime-vms">
-        <div><span>CONTROL PLANE VM</span><strong>cp-01</strong><small>cluster control / etcd</small></div>
-        <div><span>WORKER VM</span><strong>worker-01</strong><small>application workloads</small></div>
+        <div>
+          <span>CONTROL PLANE VM</span>
+          <strong>cp-01</strong>
+          <small>cluster control / etcd</small>
+        </div>
+        <div>
+          <span>WORKER VM</span>
+          <strong>worker-01</strong>
+          <small>application workloads</small>
+        </div>
       </div>
-      <div class="runtime-arrow" aria-hidden="true">↓</div>
+      <div class="runtime-arrow">↓</div>
       <div class="runtime-layer runtime-kubernetes">
-        <span>APPLICATION PLATFORM</span>
+        <span>PLATFORM</span>
         <strong>Kubernetes</strong>
-        <div class="runtime-services">
-          <i>Cilium / network</i><i>Longhorn / storage</i><i>Argo CD / delivery</i><i>CRI-O / runtime</i>
+        <small>reconciliation boundary</small>
+        <div class="runtime-services" aria-label="Platform responsibilities">
+          <i>Cilium</i><i>Longhorn</i><i>Argo CD</i><i>CRI-O</i>
         </div>
       </div>
     </div>
@@ -184,18 +195,18 @@ import '../styles/evidence-operation.css';
     <div class="operation-ledger">
       <section>
         <span>REBUILDABILITY</span>
-        <strong>From guided install to repeatable procedure.</strong>
+        <strong>From guided install to repeatable self-rebuild.</strong>
         <p>
-          The platform stopped being a one-off lab once I could destroy and rebuild it myself and write installation
-          procedures for other operators. Reproducibility became part of the platform definition.
+          The platform became understood well enough to rebuild independently and turn the process into installation
+          guidance for other environments.
         </p>
       </section>
       <section>
         <span>REAL WORKLOADS</span>
-        <strong>Minecraft and web applications share one operating model.</strong>
+        <strong>Minecraft and web services share one operating model.</strong>
         <p>
-          Stateful game servers and ordinary web services are reconciled by the same cluster while keeping their
-          storage, network and shutdown requirements explicit at the workload boundary.
+          Stateful game servers, network-edge software and conventional web workloads use the same reconciliation,
+          storage, networking and delivery primitives.
         </p>
       </section>
       <section>
@@ -218,9 +229,9 @@ import '../styles/evidence-operation.css';
   </div>
 
   <div class="evidence-next evidence-reveal">
-    <span>04 / live portfolio & breadth</span>
+    <span>04 / live runtime</span>
     <i></i>
-    <span>the system itself becomes evidence next</span>
+    <span>the running portfolio process becomes evidence next</span>
   </div>
 </section>
 
