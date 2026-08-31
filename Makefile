@@ -1,7 +1,7 @@
 .PHONY: install build dev test
 
 install:
-	npm --prefix frontend install
+	npm --prefix frontend ci --no-audit --no-fund
 
 build:
 	npm --prefix frontend run build
