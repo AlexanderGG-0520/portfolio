@@ -43,6 +43,41 @@ func TestRunTerminalCommandFastfetch(t *testing.T) {
 	}
 }
 
+func TestRunTerminalCommandTraceSystem(t *testing.T) {
+	response := runTerminalCommand("trace --system", "/")
+	if response.ExitCode != 0 {
+		t.Fatalf("expected trace exit code 0, got %d", response.ExitCode)
+	}
+
+	output := strings.Join(response.Lines, "\n")
+	for _, expected := range []string{
+		"Internet",
+		"web        → Portfolio / Astro ↔ Go API",
+		"minecraft  → mc-router",
+		"Kubernetes",
+		"cp-01",
+		"worker-01",
+		"Proxmox VE",
+		"PHYSICAL FAILURE DOMAIN",
+		"1 host",
+		"trace complete",
+	} {
+		if !strings.Contains(output, expected) {
+			t.Fatalf("trace output missing %q:\n%s", expected, output)
+		}
+	}
+}
+
+func TestRunTerminalCommandTraceRejectsUnknownTarget(t *testing.T) {
+	response := runTerminalCommand("trace --internet", "/")
+	if response.ExitCode != 2 {
+		t.Fatalf("expected trace usage error 2, got %d", response.ExitCode)
+	}
+	if output := strings.Join(response.Lines, "\n"); !strings.Contains(output, "unsupported target") || !strings.Contains(output, "trace --system") {
+		t.Fatalf("unexpected trace usage response: %s", output)
+	}
+}
+
 func TestRunTerminalCommandUnknownFailsClosed(t *testing.T) {
 	response := runTerminalCommand("rm -rf /", "/")
 	if response.ExitCode != 127 {
