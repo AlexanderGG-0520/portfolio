@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -25,6 +26,17 @@ type design struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+}
+
+type terminalRequest struct {
+	Command string `json:"command"`
+}
+
+type terminalResponse struct {
+	Command  string   `json:"command"`
+	Lines    []string `json:"lines"`
+	ExitCode int      `json:"exitCode"`
+	Clear    bool     `json:"clear,omitempty"`
 }
 
 func main() {
@@ -92,8 +104,95 @@ func newHandler(frontendDir string) http.Handler {
 		})
 	})
 
+	mux.HandleFunc("POST /api/terminal", func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 1024)
+		var request terminalRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+			return
+		}
+
+		command := strings.TrimSpace(request.Command)
+		if len(command) > 128 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "command too long"})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, runTerminalCommand(command))
+	})
+
 	mux.Handle("/", http.FileServer(http.Dir(frontendDir)))
 	return securityHeaders(mux)
+}
+
+func runTerminalCommand(command string) terminalResponse {
+	fields := strings.Fields(command)
+	if len(fields) == 0 {
+		return terminalResponse{Command: command, Lines: []string{}, ExitCode: 0}
+	}
+
+	name := strings.ToLower(fields[0])
+	response := terminalResponse{Command: command, Lines: []string{}, ExitCode: 0}
+
+	switch name {
+	case "help":
+		response.Lines = []string{
+			"available commands:",
+			"  fastfetch   portfolio/system summary",
+			"  whoami      engineering identity",
+			"  projects    featured systems",
+			"  stack       current portfolio stack",
+			"  health      backend health/runtime",
+			"  pwd         current portfolio path",
+			"  ls          visible portfolio layers",
+			"  github      GitHub profile",
+			"  clear       clear this terminal",
+			"  help        show this list",
+		}
+	case "fastfetch", "neofetch":
+		response.Lines = []string{
+			"Alec@portfolio",
+			"--------------",
+			"Role:             Backend / Infrastructure / Systems Engineering",
+			"Focus:            software -> runtime -> infrastructure",
+			"Frontend:         Astro + TypeScript",
+			"Backend:          Go",
+			"Target runtime:   Kubernetes",
+			"Edge:             mc-router",
+			"Stateful runtime: Minecartainer",
+			"Theme:            Catppuccin Mocha",
+			"TTY:              portfolio / allowlisted API",
+		}
+	case "whoami":
+		response.Lines = []string{"Alec — Backend / Infrastructure / Systems Engineering", "Builds software through the infrastructure that actually runs it."}
+	case "projects":
+		response.Lines = []string{
+			"Minecartainer              stateful workload lifecycle",
+			"mc-router                  protocol-aware network edge",
+			"Home Kubernetes Platform   infrastructure / operations",
+		}
+	case "stack":
+		response.Lines = []string{
+			"browser -> Astro -> Go API",
+			"internet -> mc-router -> workloads",
+			"workloads -> Kubernetes -> Proxmox / physical infrastructure",
+		}
+	case "health":
+		response.Lines = []string{"portfolio-backend: healthy", "runtime: " + runtime.Version()}
+	case "pwd":
+		response.Lines = []string{"/home/alec/portfolio"}
+	case "ls":
+		response.Lines = []string{"architecture/  projects/  infrastructure/  about/"}
+	case "github":
+		response.Lines = []string{"https://github.com/AlexanderGG-0520"}
+	case "clear":
+		response.Clear = true
+	default:
+		response.ExitCode = 127
+		response.Lines = []string{name + ": command not found", "try: help"}
+	}
+
+	return response
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {

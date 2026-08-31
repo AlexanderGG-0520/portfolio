@@ -1,0 +1,34 @@
+<section class="terminal-drawer" data-terminal aria-hidden="true" inert>
+  <div class="terminal-frame" role="dialog" aria-modal="true" aria-label="Portfolio terminal">
+    <div class="terminal-bar">
+      <span>portfolio tty</span>
+      <span class="terminal-mode">allowlisted / api-backed</span>
+      <button type="button" data-terminal-close aria-label="Close terminal">esc</button>
+    </div>
+
+    <div class="terminal-output" data-terminal-output aria-live="polite">
+      <div class="terminal-message terminal-system">
+        portfolio tty ready — type <b>help</b> or <b>fastfetch</b>
+      </div>
+    </div>
+
+    <form class="terminal-form" data-terminal-form autocomplete="off">
+      <label>
+        <span class="terminal-prompt">alec@portfolio:~$</span>
+        <input
+          data-terminal-input
+          name="command"
+          type="text"
+          inputmode="text"
+          maxlength="128"
+          spellcheck="false"
+          aria-label="Terminal command"
+        />
+      </label>
+    </form>
+  </div>
+</section>
+
+<script>
+  import '../scripts/terminal.ts';
+</script>
