@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TerminalPanel from '../components/TerminalPanel.astro';
+import ArchitectureLayer from '../components/ArchitectureLayer.astro';
 import '../styles/home.css';
 import '../styles/terminal.css';
 import '../styles/cta.css';
@@ -11,7 +12,7 @@ import '../styles/cta.css';
     <a class="home-brand" href="#top" aria-label="Back to top">alec<span>@portfolio</span></a>
 
     <nav class="home-nav" aria-label="Primary navigation">
-      <a href="#system">system</a>
+      <a href="#architecture">system</a>
       <button type="button" data-terminal-open>terminal ~</button>
       <a href="https://github.com/AlexanderGG-0520" rel="me">github ↗</a>
     </nav>
@@ -37,7 +38,7 @@ import '../styles/cta.css';
         </p>
 
         <div class="home-actions" aria-label="Homepage actions">
-          <a class="terminal-link" href="#system">trace architecture <span>→</span></a>
+          <a class="terminal-link" href="#architecture" data-architecture-trigger>trace architecture <span>→</span></a>
           <button class="terminal-link" type="button" data-terminal-open>open terminal <span>_</span></button>
         </div>
       </div>
@@ -85,10 +86,7 @@ import '../styles/cta.css';
       </div>
     </section>
 
-    <section class="next-layer shell" aria-label="Next portfolio layer">
-      <span>01 / architecture</span>
-      <p>The next layer starts here.</p>
-    </section>
+    <ArchitectureLayer />
   </main>
 
   <TerminalPanel />
