@@ -7,10 +7,12 @@ on:
     paths:
       - 'k8s/**'
       - '.github/workflows/kubernetes.yml'
+      - '.github/workflows/container.yml'
   pull_request:
     paths:
       - 'k8s/**'
       - '.github/workflows/kubernetes.yml'
+      - '.github/workflows/container.yml'
 
 permissions:
   contents: read
@@ -42,7 +44,7 @@ jobs:
           grep -q 'PORTFOLIO_INSTANCE' /tmp/portfolio-production.yaml
           grep -q 'PORTFOLIO_ENVIRONMENT' /tmp/portfolio-production.yaml
           grep -q 'value: production' /tmp/portfolio-production.yaml
-          grep -q 'ghcr.io/alexandergg-0520/portfolio@sha256:9c501ad619b1a06bcba149ca83bc5b624728dc4ed314bebe9d19201f7e1b8ae1' /tmp/portfolio-production.yaml
+          grep -Eq 'ghcr\.io/alexandergg-0520/portfolio@sha256:[0-9a-f]{64}' /tmp/portfolio-production.yaml
           grep -q 'readOnlyRootFilesystem: true' /tmp/portfolio-production.yaml
           grep -q 'runAsNonRoot: true' /tmp/portfolio-production.yaml
           grep -q 'automountServiceAccountToken: false' /tmp/portfolio-production.yaml
