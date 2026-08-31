@@ -3,7 +3,7 @@ const opener = document.querySelector<HTMLButtonElement>('[data-mobile-nav-open]
 const closers = document.querySelectorAll<HTMLElement>('[data-mobile-nav-close]');
 const links = document.querySelectorAll<HTMLElement>('[data-mobile-nav-link]');
 const terminalButton = document.querySelector<HTMLElement>('[data-mobile-nav-terminal]');
-const mobileQuery = window.matchMedia('(max-width: 980px)');
+const compactQuery = window.matchMedia('(max-width: 1180px), (hover: none) and (pointer: coarse)');
 
 let lastFocused: HTMLElement | null = null;
 
@@ -67,6 +67,6 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
-mobileQuery.addEventListener('change', (event) => {
+compactQuery.addEventListener('change', (event) => {
   if (!event.matches && layer?.dataset.open === 'true') setOpen(false, false);
 });
