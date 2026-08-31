@@ -98,6 +98,10 @@ body {
     translate: 0 0;
   }
 
+  .system-object:hover {
+    transform: none;
+  }
+
   .field-pulse {
     animation-duration: 7.2s;
   }
