@@ -282,6 +282,7 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 			"  help            show this list",
 		}
 	case "fastfetch", "neofetch":
+		snapshot := currentRuntimeSnapshot(time.Now().UTC())
 		response.Lines = []string{
 			"Alec@portfolio",
 			"--------------",
@@ -289,7 +290,9 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 			"Focus:            software -> runtime -> infrastructure",
 			"Frontend:         Astro + TypeScript",
 			"Backend:          Go",
-			"Target runtime:   Kubernetes",
+			"Environment:      " + snapshot.Deployment.Environment,
+			"Orchestrator:     " + snapshot.Deployment.Orchestrator,
+			"Instance:         " + snapshot.Deployment.Instance,
 			"Edge:             mc-router",
 			"Stateful runtime: Minecartainer",
 			"Theme:            Catppuccin Mocha",
@@ -306,9 +309,9 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 		}
 	case "stack":
 		response.Lines = []string{
-			"browser -> Astro -> Go API",
-			"internet -> mc-router -> workloads",
-			"workloads -> Kubernetes -> Proxmox / physical infrastructure",
+			"web -> Cloudflare Tunnel -> ClusterIP Service -> Go / Astro",
+			"minecraft -> mc-router -> workloads",
+			"platform -> Kubernetes -> Proxmox / physical infrastructure",
 		}
 	case "trace":
 		response.Lines, response.ExitCode = runTraceCommand(fields)
