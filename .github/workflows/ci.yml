@@ -56,6 +56,8 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Operational evidence is not'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '36c75dc'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '.server-install.json'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'trace complete'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Software, through the infrastructure that runs it.'
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
