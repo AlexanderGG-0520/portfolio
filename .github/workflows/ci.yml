@@ -38,7 +38,11 @@ jobs:
         shell: bash
         run: |
           cd backend
-          go run ./cmd/server -frontend ../frontend/dist > /tmp/portfolio-backend.log 2>&1 &
+          PORTFOLIO_ENVIRONMENT=ci \
+          PORTFOLIO_ORCHESTRATOR=process \
+          PORTFOLIO_INSTANCE=github-actions \
+          PORTFOLIO_REVISION="$GITHUB_SHA" \
+            go run ./cmd/server -frontend ../frontend/dist > /tmp/portfolio-backend.log 2>&1 &
           pid=$!
           trap 'kill "$pid" || true' EXIT
           for _ in {1..30}; do
@@ -48,12 +52,18 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:8080/api/profile | grep -q 'Minecartainer'
+          curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q '"environment":"ci"'
+          curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q '"instance":"github-actions"'
+          curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q "$GITHUB_SHA"
           curl --fail --silent http://127.0.0.1:8080/ | grep -q '/en/'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'From code'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'lang="en"'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The architecture'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Home Kubernetes Platform'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Operational evidence is not'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The browser asks.'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'GET'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '/api/runtime'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '36c75dc'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '.server-install.json'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'trace complete'
@@ -68,6 +78,10 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '{"command":"trace --system","cwd":"/"}' \
             http://127.0.0.1:8080/api/terminal | grep -q 'PHYSICAL FAILURE DOMAIN'
+          curl --fail --silent \
+            -H 'Content-Type: application/json' \
+            -d '{"command":"runtime","cwd":"/"}' \
+            http://127.0.0.1:8080/api/terminal | grep -q 'GET /api/runtime'
           curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
           curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
           curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'

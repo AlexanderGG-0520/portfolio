@@ -1,0 +1,275 @@
+.live-runtime-layer {
+  position: relative;
+  padding-block: clamp(110px, 14vw, 190px) 120px;
+  scroll-margin-top: 32px;
+}
+
+.live-runtime-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0 50% auto;
+  width: 1px;
+  height: 110px;
+  background: linear-gradient(to bottom, rgb(166 227 161 / .42), transparent);
+  pointer-events: none;
+}
+
+.live-runtime-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+  gap: clamp(42px, 8vw, 120px);
+  align-items: end;
+  margin-bottom: clamp(64px, 8vw, 105px);
+}
+
+.live-runtime-index,
+.live-runtime-boundaries span,
+.live-runtime-principle span {
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.live-runtime-heading h2 {
+  max-width: 850px;
+  margin: 18px 0 0;
+  color: var(--text);
+  font-size: clamp(3rem, 6vw, 6.3rem);
+  line-height: .94;
+  letter-spacing: -.065em;
+  font-weight: 710;
+}
+
+.live-runtime-heading > p {
+  max-width: 560px;
+  margin: 0;
+  color: var(--subtext-1);
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  line-height: 1.75;
+}
+
+.live-runtime-console {
+  border-block: 1px solid rgb(69 71 90 / .48);
+  background:
+    linear-gradient(180deg, rgb(30 30 46 / .28), transparent 55%),
+    radial-gradient(circle at 12% 0%, rgb(166 227 161 / .045), transparent 42%);
+}
+
+.live-runtime-request {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 0 22px;
+  border-bottom: 1px solid rgb(69 71 90 / .36);
+  font-family: var(--font-mono);
+  font-size: .86rem;
+}
+
+.live-runtime-request > span {
+  color: var(--green);
+}
+
+.live-runtime-request code {
+  color: var(--text);
+  font: inherit;
+}
+
+.live-runtime-request i {
+  height: 1px;
+  background: linear-gradient(90deg, rgb(69 71 90 / .16), rgb(166 227 161 / .34), rgb(69 71 90 / .12));
+}
+
+.live-runtime-request strong {
+  color: var(--overlay-1);
+  font-weight: 500;
+}
+
+.live-runtime-layer[data-runtime-state="healthy"] .live-runtime-request strong,
+.live-runtime-layer[data-runtime-state="healthy"] .runtime-state {
+  color: var(--green);
+}
+
+.live-runtime-layer[data-runtime-state="offline"] .live-runtime-request strong,
+.live-runtime-layer[data-runtime-state="offline"] .runtime-state {
+  color: var(--red);
+}
+
+.live-runtime-request small {
+  color: var(--overlay-1);
+  font-size: .78rem;
+}
+
+.live-runtime-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.live-runtime-grid > div {
+  min-height: 116px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 22px;
+  border-right: 1px solid rgb(69 71 90 / .3);
+  border-bottom: 1px solid rgb(69 71 90 / .3);
+}
+
+.live-runtime-grid > div:nth-child(4n) {
+  border-right: 0;
+}
+
+.live-runtime-grid > div:nth-last-child(-n + 4) {
+  border-bottom: 0;
+}
+
+.live-runtime-grid dt {
+  color: var(--overlay-1);
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.live-runtime-grid dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: clamp(.88rem, 1.2vw, 1.02rem);
+  overflow-wrap: anywhere;
+}
+
+.live-runtime-boundaries {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(64px, 8vw, 110px);
+  border-top: 1px solid rgb(69 71 90 / .4);
+}
+
+.live-runtime-boundaries section {
+  min-height: 270px;
+  padding: clamp(28px, 3.6vw, 46px);
+  border-right: 1px solid rgb(69 71 90 / .32);
+  border-bottom: 1px solid rgb(69 71 90 / .32);
+}
+
+.live-runtime-boundaries section:first-child {
+  border-left: 1px solid rgb(69 71 90 / .32);
+}
+
+.live-runtime-boundaries strong {
+  display: block;
+  margin-top: 18px;
+  color: var(--text);
+  font-size: clamp(1.45rem, 2.2vw, 2.25rem);
+  line-height: 1.12;
+  letter-spacing: -.04em;
+}
+
+.live-runtime-boundaries p {
+  margin: 22px 0 0;
+  color: var(--subtext-1);
+  line-height: 1.72;
+}
+
+.live-runtime-principle {
+  display: grid;
+  grid-template-columns: minmax(170px, .35fr) minmax(0, 1.65fr);
+  gap: clamp(30px, 6vw, 90px);
+  margin-top: clamp(90px, 11vw, 150px);
+  padding: 34px 0;
+  border-block: 1px solid rgb(69 71 90 / .36);
+}
+
+.live-runtime-principle p {
+  max-width: 940px;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.4rem, 2.3vw, 2.35rem);
+  line-height: 1.36;
+  letter-spacing: -.035em;
+}
+
+@media (max-width: 980px) {
+  .live-runtime-heading {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .live-runtime-heading > p {
+    max-width: 700px;
+  }
+
+  .live-runtime-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .live-runtime-grid > div:nth-child(4n) {
+    border-right: 1px solid rgb(69 71 90 / .3);
+  }
+
+  .live-runtime-grid > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .live-runtime-grid > div:nth-last-child(-n + 4) {
+    border-bottom: 1px solid rgb(69 71 90 / .3);
+  }
+
+  .live-runtime-grid > div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .live-runtime-boundaries {
+    grid-template-columns: 1fr;
+  }
+
+  .live-runtime-boundaries section {
+    min-height: 0;
+    border-left: 1px solid rgb(69 71 90 / .32);
+  }
+}
+
+@media (max-width: 680px) {
+  .live-runtime-layer {
+    padding-top: 92px;
+  }
+
+  .live-runtime-request {
+    grid-template-columns: auto 1fr auto;
+    padding-inline: 14px;
+  }
+
+  .live-runtime-request i,
+  .live-runtime-request small {
+    display: none;
+  }
+
+  .live-runtime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .live-runtime-grid > div,
+  .live-runtime-grid > div:nth-child(2n),
+  .live-runtime-grid > div:nth-child(4n),
+  .live-runtime-grid > div:nth-last-child(-n + 4),
+  .live-runtime-grid > div:nth-last-child(-n + 2) {
+    min-height: 92px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(69 71 90 / .3);
+  }
+
+  .live-runtime-grid > div:last-child {
+    border-bottom: 0;
+  }
+
+  .live-runtime-principle {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}

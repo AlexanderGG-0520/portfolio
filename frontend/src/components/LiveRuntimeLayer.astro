@@ -1,0 +1,115 @@
+---
+import '../styles/live-runtime.css';
+---
+
+<section id="runtime" class="live-runtime-layer shell" aria-labelledby="runtime-heading" data-live-runtime>
+  <div class="live-runtime-heading">
+    <div>
+      <span class="live-runtime-index">04 / LIVE RUNTIME</span>
+      <h2 id="runtime-heading">The browser asks.<br />The process answers.</h2>
+    </div>
+    <p>
+      Runtime state is not invented in the client. The Go process reports an explicitly public snapshot of
+      itself: release identity, process lifetime and deployment context.
+    </p>
+  </div>
+
+  <div class="live-runtime-console">
+    <div class="live-runtime-request" aria-live="polite">
+      <span>GET</span>
+      <code>/api/runtime</code>
+      <i aria-hidden="true"></i>
+      <strong data-runtime-http>connecting</strong>
+      <small data-runtime-latency>-- ms</small>
+    </div>
+
+    <dl class="live-runtime-grid">
+      <div>
+        <dt>service</dt>
+        <dd data-runtime-service>portfolio-backend</dd>
+      </div>
+      <div>
+        <dt>status</dt>
+        <dd class="runtime-state" data-runtime-status>connecting</dd>
+      </div>
+      <div>
+        <dt>environment</dt>
+        <dd data-runtime-environment>--</dd>
+      </div>
+      <div>
+        <dt>orchestrator</dt>
+        <dd data-runtime-orchestrator>--</dd>
+      </div>
+      <div>
+        <dt>instance</dt>
+        <dd data-runtime-instance>--</dd>
+      </div>
+      <div>
+        <dt>Go runtime</dt>
+        <dd data-runtime-go>--</dd>
+      </div>
+      <div>
+        <dt>release</dt>
+        <dd data-runtime-version>--</dd>
+      </div>
+      <div>
+        <dt>revision</dt>
+        <dd data-runtime-revision>--</dd>
+      </div>
+      <div>
+        <dt>started at</dt>
+        <dd data-runtime-started>--</dd>
+      </div>
+      <div>
+        <dt>uptime</dt>
+        <dd data-runtime-uptime>--</dd>
+      </div>
+      <div>
+        <dt>server time</dt>
+        <dd data-runtime-time>--</dd>
+      </div>
+      <div>
+        <dt>source</dt>
+        <dd>/api/runtime</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="live-runtime-boundaries">
+    <section>
+      <span>BACKEND RESPONSIBILITY</span>
+      <strong>Own runtime truth.</strong>
+      <p>
+        Process state, release metadata and the virtual portfolio shell come from Go because the browser cannot
+        authoritatively know them by itself.
+      </p>
+    </section>
+
+    <section>
+      <span>PUBLIC BOUNDARY</span>
+      <strong>Expose only what is intentional.</strong>
+      <p>
+        No raw Kubernetes API and no automatic hostname or environment dump. Deployment metadata is opt-in,
+        length-limited and filtered before it becomes public.
+      </p>
+    </section>
+
+    <section>
+      <span>DEPLOYMENT PATH</span>
+      <strong>Local today. Kubernetes later.</strong>
+      <p>
+        The API contract stays the same. A future deployment can inject release and workload identity through
+        explicit environment variables or the Downward API without changing the frontend.
+      </p>
+    </section>
+  </div>
+
+  <div class="live-runtime-principle">
+    <span>DESIGN PRINCIPLE</span>
+    <p>The frontend presents the system. The backend is the source of truth for the system that is actually running.</p>
+  </div>
+</section>
+
+<script>
+  import '../scripts/live-runtime.ts';
+</script>
