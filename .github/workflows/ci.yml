@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - feat/three-design-prototypes
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Test backend
+        working-directory: backend
+        run: go test ./...
+
+      - name: Smoke test backend and static frontend
+        shell: bash
+        run: |
+          cd backend
+          go run ./cmd/server -frontend ../frontend/dist > /tmp/portfolio-backend.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" || true' EXIT
+          for _ in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/api/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/api/profile | grep -q 'Minecartainer'
+          curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
+          curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
+          curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'

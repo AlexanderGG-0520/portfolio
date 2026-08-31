@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DesignPreview from '../../components/DesignPreview.astro';
+
+export function getStaticPaths() {
+  return ['a', 'b', 'c'].map((variant) => ({ params: { variant }, props: { variant } }));
+}
+
+interface Props {
+  variant: 'a' | 'b' | 'c';
+}
+const { variant } = Astro.props;
+---
+
+<BaseLayout title={`Alec — Design ${variant.toUpperCase()}`} design={variant}>
+  <DesignPreview variant={variant} />
+</BaseLayout>
