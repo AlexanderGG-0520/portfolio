@@ -28,6 +28,7 @@ spec:
     spec:
       serviceAccountName: portfolio
       automountServiceAccountToken: false
+      enableServiceLinks: false
       terminationGracePeriodSeconds: 10
       securityContext:
         seccompProfile:
