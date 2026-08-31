@@ -5,10 +5,12 @@ import ArchitectureLayer from '../../components/ArchitectureLayer.astro';
 import CaseStudiesLayer from '../../components/CaseStudiesLayer.astro';
 import EvidenceOperationLayer from '../../components/EvidenceOperationLayer.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import MobileNavigation from '../../components/MobileNavigation.astro';
 import { supportedLocales, type Locale } from '../../i18n/locales';
 import '../../styles/home.css';
 import '../../styles/terminal.css';
 import '../../styles/cta.css';
+import '../../styles/mobile-navigation.css';
 
 export function getStaticPaths() {
   return supportedLocales.map((lang) => ({ params: { lang }, props: { lang } }));
@@ -38,6 +40,8 @@ const { lang } = Astro.props;
       <span>backend:</span>
       <span data-api-status>connecting</span>
     </div>
+
+    <MobileNavigation />
   </header>
 
   <main id="top" class="home-main">
