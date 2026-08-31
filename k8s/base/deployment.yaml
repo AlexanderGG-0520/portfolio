@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio
+  labels:
+    app.kubernetes.io/name: portfolio
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: alec-portfolio
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  minReadySeconds: 3
+  progressDeadlineSeconds: 120
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portfolio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: portfolio
+        app.kubernetes.io/component: web
+        app.kubernetes.io/part-of: alec-portfolio
+    spec:
+      serviceAccountName: portfolio
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 10
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: portfolio
+          image: ghcr.io/alexandergg-0520/portfolio:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORTFOLIO_ORCHESTRATOR
+              value: kubernetes
+            - name: PORTFOLIO_INSTANCE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 2
+            failureThreshold: 15
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
