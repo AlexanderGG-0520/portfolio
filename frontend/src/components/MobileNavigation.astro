@@ -1,0 +1,81 @@
+<button
+  class="mobile-nav-trigger"
+  type="button"
+  aria-controls="mobile-navigation"
+  aria-expanded="false"
+  data-mobile-nav-open
+>
+  <span>nav</span>
+  <b aria-hidden="true">/</b>
+</button>
+
+<div class="mobile-nav-layer" data-mobile-nav aria-hidden="true" inert>
+  <button
+    class="mobile-nav-backdrop"
+    type="button"
+    aria-label="Close navigation"
+    tabindex="-1"
+    data-mobile-nav-close
+  ></button>
+
+  <nav id="mobile-navigation" class="mobile-nav-panel" aria-label="Mobile navigation">
+    <div class="mobile-nav-bar">
+      <span>~/portfolio / nav</span>
+      <button type="button" data-mobile-nav-close>esc</button>
+    </div>
+
+    <div class="mobile-nav-links">
+      <a href="#top" data-mobile-nav-link>
+        <span>00</span>
+        <strong>top</strong>
+        <small>identity / thesis</small>
+        <i aria-hidden="true">↑</i>
+      </a>
+
+      <a href="#architecture" data-mobile-nav-link>
+        <span>01</span>
+        <strong>system</strong>
+        <small>responsibility boundaries</small>
+        <i aria-hidden="true">↓</i>
+      </a>
+
+      <a href="#case-studies" data-mobile-nav-link>
+        <span>02</span>
+        <strong>case studies</strong>
+        <small>origin / problem / design</small>
+        <i aria-hidden="true">↓</i>
+      </a>
+
+      <a href="#evidence" data-mobile-nav-link>
+        <span>03</span>
+        <strong>evidence</strong>
+        <small>code / incidents / operation</small>
+        <i aria-hidden="true">↓</i>
+      </a>
+
+      <button type="button" data-terminal-open data-mobile-nav-terminal>
+        <span>tty</span>
+        <strong>terminal ~</strong>
+        <small>fish-inspired portfolio shell</small>
+        <i aria-hidden="true">❯</i>
+      </button>
+
+      <a href="https://github.com/AlexanderGG-0520" rel="me" data-mobile-nav-link>
+        <span>git</span>
+        <strong>github</strong>
+        <small>repositories / history</small>
+        <i aria-hidden="true">↗</i>
+      </a>
+    </div>
+
+    <div class="mobile-nav-runtime" aria-label="Portfolio backend status">
+      <span class="status-dot"></span>
+      <span>backend:</span>
+      <strong data-api-status>connecting</strong>
+    </div>
+  </nav>
+</div>
+
+<script>
+  import '../scripts/mobile-navigation.ts';
+</script>
