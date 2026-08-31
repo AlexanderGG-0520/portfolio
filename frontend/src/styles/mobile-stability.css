@@ -88,6 +88,20 @@ body {
     opacity: .72;
   }
 
+  /*
+   * Keep signal motion, but keep the topology labels themselves anchored.
+   * Moving labels against a clipped circle reads as breathing/zooming on touch
+   * devices even though the geometry is not actually scaling.
+   */
+  .system-object {
+    animation: none;
+    translate: 0 0;
+  }
+
+  .field-pulse {
+    animation-duration: 7.2s;
+  }
+
   .home-footnote {
     bottom: 1rem;
   }
