@@ -1,0 +1,61 @@
+name: Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/kubernetes.yml'
+  pull_request:
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/kubernetes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.33.12'
+
+      - name: Render base
+        run: kubectl kustomize k8s/base > /tmp/portfolio-base.yaml
+
+      - name: Render production
+        run: kubectl kustomize k8s/overlays/production > /tmp/portfolio-production.yaml
+
+      - name: Verify deployment contract
+        shell: bash
+        run: |
+          grep -q 'kind: Namespace' /tmp/portfolio-production.yaml
+          grep -q 'name: portfolio' /tmp/portfolio-production.yaml
+          grep -q 'type: ClusterIP' /tmp/portfolio-production.yaml
+          grep -q 'PORTFOLIO_ORCHESTRATOR' /tmp/portfolio-production.yaml
+          grep -q 'PORTFOLIO_INSTANCE' /tmp/portfolio-production.yaml
+          grep -q 'PORTFOLIO_ENVIRONMENT' /tmp/portfolio-production.yaml
+          grep -q 'value: production' /tmp/portfolio-production.yaml
+          grep -q 'ghcr.io/alexandergg-0520/portfolio@sha256:9c501ad619b1a06bcba149ca83bc5b624728dc4ed314bebe9d19201f7e1b8ae1' /tmp/portfolio-production.yaml
+          grep -q 'readOnlyRootFilesystem: true' /tmp/portfolio-production.yaml
+          grep -q 'runAsNonRoot: true' /tmp/portfolio-production.yaml
+          grep -q 'automountServiceAccountToken: false' /tmp/portfolio-production.yaml
+
+          if grep -q '^kind: Ingress$' /tmp/portfolio-production.yaml; then
+            echo 'Ingress must not be part of the Cloudflare Tunnel deployment path.' >&2
+            exit 1
+          fi
+
+      - name: Verify Argo CD bootstrap
+        shell: bash
+        run: |
+          grep -q 'kind: Application' k8s/argocd/application.yaml
+          grep -q 'path: k8s/overlays/production' k8s/argocd/application.yaml
+          grep -q 'prune: true' k8s/argocd/application.yaml
+          grep -q 'selfHeal: true' k8s/argocd/application.yaml
