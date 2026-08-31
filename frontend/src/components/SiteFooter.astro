@@ -1,41 +1,50 @@
 ---
+import { alternateLocale, type Locale } from '../i18n/locales';
 import '../styles/site-footer.css';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ja = lang === 'ja';
+const otherLocale = alternateLocale(lang);
+const c = ja
+  ? {
+      identity: 'ソフトウェアを、実際に動かすinfrastructureまで。',
+      role: 'Backend / Infrastructure / Systems Engineering',
+      navAria: 'フッターナビゲーション',
+      navigation: 'NAVIGATION',
+      system: 'システム', cases: 'Case Studies', evidence: '証拠', runtime: 'runtime', top: 'トップへ戻る ↑',
+      endpoints: 'ENDPOINTS', terminal: 'terminalを開く ❯',
+      language: 'English ↔',
+    }
+  : {
+      identity: 'Software, through the infrastructure that runs it.',
+      role: 'Backend / Infrastructure / Systems Engineering',
+      navAria: 'Footer navigation',
+      navigation: 'NAVIGATION',
+      system: 'system', cases: 'cases', evidence: 'evidence', runtime: 'runtime', top: 'back to top ↑',
+      endpoints: 'ENDPOINTS', terminal: 'open terminal ❯',
+      language: '日本語 ↔',
+    };
 ---
 
-<footer class="site-footer shell" aria-label="Site footer">
-  <div class="footer-trace" aria-hidden="true">
-    <span>trace complete</span>
-    <i></i>
-    <span>EOF</span>
-  </div>
-
+<footer class="site-footer shell" aria-label={ja ? 'サイトフッター' : 'Site footer'}>
+  <div class="footer-trace" aria-hidden="true"><span>trace complete</span><i></i><span>EOF</span></div>
   <div class="footer-main">
-    <div class="footer-identity">
-      <span class="footer-kicker">alec@portfolio</span>
-      <strong>Software, through the infrastructure that runs it.</strong>
-      <p>Backend / Infrastructure / Systems Engineering</p>
-    </div>
-
-    <nav class="footer-nav" aria-label="Footer navigation">
-      <span>NAVIGATION</span>
-      <a href="#architecture">system</a>
-      <a href="#case-studies">cases</a>
-      <a href="#evidence">evidence</a>
-      <a href="#runtime">runtime</a>
-      <a href="#top">back to top ↑</a>
+    <div class="footer-identity"><span class="footer-kicker">alec@portfolio</span><strong>{c.identity}</strong><p>{c.role}</p></div>
+    <nav class="footer-nav" aria-label={c.navAria}>
+      <span>{c.navigation}</span>
+      <a href="#architecture">{c.system}</a><a href="#case-studies">{c.cases}</a><a href="#evidence">{c.evidence}</a><a href="#runtime">{c.runtime}</a><a href="#top">{c.top}</a>
     </nav>
-
     <div class="footer-actions">
-      <span>ENDPOINTS</span>
+      <span>{c.endpoints}</span>
       <a href="https://github.com/AlexanderGG-0520" rel="me">GitHub ↗</a>
-      <button type="button" data-terminal-open>open terminal ❯</button>
+      <a href={`/${otherLocale}/`} hreflang={otherLocale}>{c.language}</a>
+      <button type="button" data-terminal-open>{c.terminal}</button>
       <p>Astro frontend ↔ Go API</p>
     </div>
   </div>
-
-  <div class="footer-bottom">
-    <span>© 2026 Alec</span>
-    <span>Catppuccin Mocha / Noto Sans CJK JP</span>
-    <span>~/portfolio</span>
-  </div>
+  <div class="footer-bottom"><span>© 2026 Alec</span><span>Catppuccin Mocha / Noto Sans CJK JP</span><span>~/portfolio</span></div>
 </footer>

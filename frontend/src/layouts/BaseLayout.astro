@@ -1,14 +1,21 @@
 ---
 import '../styles/global.css';
 import '../styles/readability.css';
+import '../styles/locale.css';
 
 interface Props {
   title: string;
+  description?: string;
   lang?: string;
   design?: 'a' | 'b' | 'c' | 'index';
 }
 
-const { title, lang = 'en', design = 'index' } = Astro.props;
+const {
+  title,
+  description = 'Alec — Backend, Infrastructure and Systems Engineering portfolio.',
+  lang = 'en',
+  design = 'index',
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -17,7 +24,7 @@ const { title, lang = 'en', design = 'index' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#11111b" />
-    <meta name="description" content="Alec — Backend, Infrastructure and Systems Engineering portfolio." />
+    <meta name="description" content={description} />
     <title>{title}</title>
   </head>
   <body data-design={design}>

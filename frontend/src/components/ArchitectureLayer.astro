@@ -1,18 +1,75 @@
 ---
+import type { Locale } from '../i18n/locales';
 import '../styles/architecture.css';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const c = lang === 'ja'
+  ? {
+      index: '01 / architecture',
+      title1: '一つのシステム。',
+      title2: '複数の責務境界。',
+      intro: '重要なのは技術の数ではありません。public trafficから永続state、その下の物理マシンまで、各layerがシステムのどの責務を持つかを分けています。',
+      publicDetail: '2つのtraffic path / 1つの運用platform',
+      portfolioDetail: 'Astro frontend ↔ Go API',
+      webDetail: 'HTTP(S) / application surface',
+      routerDetail: 'protocol-aware routing',
+      routerTransport: 'Java handshake / TCP :25565',
+      workloadDetail: 'container lifecycle / 永続world state',
+      platformDetail: 'desired → ready',
+      network: 'network',
+      storage: 'storage',
+      delivery: 'delivery',
+      runtime: 'runtime',
+      cpDetail: 'cluster control / etcd',
+      workerDetail: 'application workloads',
+      proxmoxDetail: 'VM lifecycleとKubernetes workload lifecycleを分離',
+      hardware: 'Control PlaneとWorkerは現在も論理的には分離していますが、同じ1台の物理サーバー上で動いています。現在をHAだと見せかけず、この設計のまま将来の物理node追加へ拡張できます。',
+      principle: 'ソフトウェアはprocess boundaryで完成ではありません。routing、runtime lifecycle、永続state、orchestration、そしてその下のinfrastructureまで、設計・実装・運用するシステムの一部です。',
+      next: '02 / case studies',
+      descend: 'さらに具体化する ↓',
+      nextAria: 'Case Studiesへ進む',
+      platformAria: 'Kubernetes platformの責務',
+    }
+  : {
+      index: '01 / architecture',
+      title1: 'One system.',
+      title2: 'Several responsibility boundaries.',
+      intro: 'The point is not the number of technologies. It is how each layer owns a different part of the system, from public traffic to persistent state and the physical machine underneath it.',
+      publicDetail: 'two traffic paths / one operating platform',
+      portfolioDetail: 'Astro frontend ↔ Go API',
+      webDetail: 'HTTP(S) / application surface',
+      routerDetail: 'protocol-aware routing',
+      routerTransport: 'Java handshake / TCP :25565',
+      workloadDetail: 'container lifecycle / persistent world state',
+      platformDetail: 'desired → ready',
+      network: 'network',
+      storage: 'storage',
+      delivery: 'delivery',
+      runtime: 'runtime',
+      cpDetail: 'cluster control / etcd',
+      workerDetail: 'application workloads',
+      proxmoxDetail: 'separates VM lifecycle from Kubernetes workload lifecycle',
+      hardware: 'Control Plane and Worker are logically separated today, but they still share one physical server. The design can grow into additional physical nodes without pretending the current setup is HA.',
+      principle: 'Software is not finished at the process boundary. Routing, runtime lifecycle, persistent state, orchestration and the infrastructure below it are part of the system I design and operate.',
+      next: '02 / case studies',
+      descend: 'descend further ↓',
+      nextAria: 'Continue to case studies',
+      platformAria: 'Kubernetes platform responsibilities',
+    };
 ---
 
 <section id="architecture" class="architecture-layer shell" data-architecture-layer aria-labelledby="architecture-title">
   <header class="architecture-heading">
     <div>
-      <span class="architecture-index">01 / architecture</span>
-      <h2 id="architecture-title">One system.<br />Several responsibility boundaries.</h2>
+      <span class="architecture-index">{c.index}</span>
+      <h2 id="architecture-title">{c.title1}<br />{c.title2}</h2>
     </div>
 
-    <p>
-      The point is not the number of technologies. It is how each layer owns a different part of the system,
-      from public traffic to persistent state and the physical machine underneath it.
-    </p>
+    <p>{c.intro}</p>
   </header>
 
   <div class="architecture-map" data-architecture-map>
@@ -21,7 +78,7 @@ import '../styles/architecture.css';
     <div class="architecture-origin architecture-reveal" style="--step: 0">
       <span class="architecture-label">PUBLIC</span>
       <strong>Internet</strong>
-      <small>two traffic paths / one operating platform</small>
+      <small>{c.publicDetail}</small>
     </div>
 
     <div class="architecture-lanes architecture-reveal" style="--step: 1">
@@ -29,16 +86,16 @@ import '../styles/architecture.css';
         <span class="architecture-label">WEB</span>
         <div class="lane-flow" aria-hidden="true"><i></i></div>
         <strong>Portfolio</strong>
-        <p>Astro frontend ↔ Go API</p>
-        <small>HTTP(S) / application surface</small>
+        <p>{c.portfolioDetail}</p>
+        <small>{c.webDetail}</small>
       </article>
 
       <article class="architecture-lane architecture-lane-game">
         <span class="architecture-label">MINECRAFT EDGE</span>
         <div class="lane-flow" aria-hidden="true"><i></i></div>
         <strong>mc-router</strong>
-        <p>protocol-aware routing</p>
-        <small>Java handshake / TCP :25565</small>
+        <p>{c.routerDetail}</p>
+        <small>{c.routerTransport}</small>
       </article>
     </div>
 
@@ -46,7 +103,7 @@ import '../styles/architecture.css';
       <div class="workload-note">
         <span class="architecture-label">STATEFUL RUNTIME</span>
         <strong>Minecartainer</strong>
-        <small>container lifecycle / persistent world state</small>
+        <small>{c.workloadDetail}</small>
       </div>
       <span class="workload-join" aria-hidden="true">↘</span>
     </div>
@@ -55,14 +112,14 @@ import '../styles/architecture.css';
       <div class="platform-title">
         <span class="architecture-label">PLATFORM</span>
         <strong>Kubernetes</strong>
-        <small>desired → ready</small>
+        <small>{c.platformDetail}</small>
       </div>
 
-      <div class="platform-services" aria-label="Kubernetes platform responsibilities">
-        <span>Cilium <small>network</small></span>
-        <span>Longhorn <small>storage</small></span>
-        <span>Argo CD <small>delivery</small></span>
-        <span>CRI-O <small>runtime</small></span>
+      <div class="platform-services" aria-label={c.platformAria}>
+        <span>Cilium <small>{c.network}</small></span>
+        <span>Longhorn <small>{c.storage}</small></span>
+        <span>Argo CD <small>{c.delivery}</small></span>
+        <span>CRI-O <small>{c.runtime}</small></span>
       </div>
     </div>
 
@@ -70,19 +127,19 @@ import '../styles/architecture.css';
       <div>
         <span class="architecture-label">CONTROL PLANE VM</span>
         <strong>cp-01</strong>
-        <small>cluster control / etcd</small>
+        <small>{c.cpDetail}</small>
       </div>
       <div>
         <span class="architecture-label">WORKER VM</span>
         <strong>worker-01</strong>
-        <small>application workloads</small>
+        <small>{c.workerDetail}</small>
       </div>
     </div>
 
     <div class="architecture-proxmox architecture-reveal" style="--step: 5">
       <span class="architecture-label">VIRTUALIZATION</span>
       <strong>Proxmox VE</strong>
-      <small>separates VM lifecycle from Kubernetes workload lifecycle</small>
+      <small>{c.proxmoxDetail}</small>
     </div>
 
     <div class="architecture-hardware architecture-reveal" style="--step: 6">
@@ -90,25 +147,19 @@ import '../styles/architecture.css';
         <span class="architecture-label">PHYSICAL FAILURE DOMAIN</span>
         <strong>1 host</strong>
       </div>
-      <p>
-        Control Plane and Worker are logically separated today, but they still share one physical server.
-        The design can grow into additional physical nodes without pretending the current setup is HA.
-      </p>
+      <p>{c.hardware}</p>
     </div>
   </div>
 
   <div class="architecture-principle architecture-reveal" style="--step: 7">
     <span class="architecture-label">DESIGN PRINCIPLE</span>
-    <p>
-      Software is not finished at the process boundary. Routing, runtime lifecycle, persistent state,
-      orchestration and the infrastructure below it are part of the system I design and operate.
-    </p>
+    <p>{c.principle}</p>
   </div>
 
-  <a class="architecture-next" href="#case-studies" aria-label="Continue to case studies">
-    <span>02 / case studies</span>
+  <a class="architecture-next" href="#case-studies" aria-label={c.nextAria}>
+    <span>{c.next}</span>
     <i></i>
-    <span>descend further ↓</span>
+    <span>{c.descend}</span>
   </a>
 </section>
 

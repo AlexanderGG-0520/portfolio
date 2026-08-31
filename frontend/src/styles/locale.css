@@ -1,0 +1,48 @@
+html[lang="ja"] .home-copy h1 {
+  max-width: 900px;
+  font-size: clamp(3.2rem, 6.4vw, 6.35rem);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+html[lang="ja"] .home-copy .lede,
+html[lang="ja"] .architecture-heading > p,
+html[lang="ja"] .case-studies-heading > p,
+html[lang="ja"] .evidence-heading > p,
+html[lang="ja"] .live-runtime-heading > p,
+html[lang="ja"] .case-study-summary,
+html[lang="ja"] .case-study-question p,
+html[lang="ja"] .case-study-details p,
+html[lang="ja"] .evidence-record p,
+html[lang="ja"] .operation-ledger p,
+html[lang="ja"] .live-runtime-boundaries p {
+  line-height: 1.82;
+}
+
+html[lang="ja"] .architecture-heading h2,
+html[lang="ja"] .case-studies-heading h2,
+html[lang="ja"] .evidence-heading h2,
+html[lang="ja"] .live-runtime-heading h2 {
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+
+html[lang="ja"] .case-study-details h4,
+html[lang="ja"] .evidence-record strong,
+html[lang="ja"] .operation-ledger strong,
+html[lang="ja"] .live-runtime-boundaries strong {
+  line-height: 1.55;
+}
+
+@media (max-width: 980px) {
+  html[lang="ja"] .home-copy h1 {
+    font-size: clamp(3rem, 8.8vw, 5.6rem);
+  }
+}
+
+@media (max-width: 680px) {
+  html[lang="ja"] .home-copy h1 {
+    font-size: clamp(2.75rem, 12.5vw, 4.4rem);
+    line-height: 1.02;
+  }
+}

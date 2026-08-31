@@ -1,7 +1,7 @@
 ---
 import { defaultLocale } from '../i18n/locales';
 
-const destination = `/${defaultLocale}/`;
+const fallback = `/${defaultLocale}/`;
 ---
 
 <!doctype html>
@@ -10,14 +10,18 @@ const destination = `/${defaultLocale}/`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex" />
-    <meta http-equiv="refresh" content={`0;url=${destination}`} />
-    <link rel="canonical" href={destination} />
     <title>Alec — Portfolio</title>
-    <script is:inline define:vars={{ destination }}>
-      window.location.replace(destination);
+    <script is:inline define:vars={{ fallback }}>
+      const prefersJapanese = (navigator.languages ?? [navigator.language]).some((language) =>
+        language?.toLowerCase().startsWith('ja'),
+      );
+      window.location.replace(prefersJapanese ? '/ja/' : fallback);
     </script>
   </head>
   <body>
-    <a href={destination}>Continue to English</a>
+    <nav aria-label="Choose language">
+      <a href="/en/" hreflang="en">English</a>
+      <a href="/ja/" hreflang="ja">日本語</a>
+    </nav>
   </body>
 </html>

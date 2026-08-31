@@ -33,7 +33,10 @@ function updateControls(mode: ViewMode) {
 
   document.querySelectorAll<HTMLButtonElement>(toggleSelector).forEach((button) => {
     button.setAttribute('aria-pressed', mode === 'inspect' ? 'true' : 'false');
-    button.setAttribute('aria-label', mode === 'inspect' ? 'Switch to skim view' : 'Switch to inspect view');
+    const label = mode === 'inspect'
+      ? button.dataset.viewModeSkimAria ?? 'Switch to skim view'
+      : button.dataset.viewModeInspectAria ?? 'Switch to inspect view';
+    button.setAttribute('aria-label', label);
   });
 }
 

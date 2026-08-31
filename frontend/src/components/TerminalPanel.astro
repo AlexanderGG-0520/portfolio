@@ -1,13 +1,26 @@
+---
+import type { Locale } from '../i18n/locales';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ja = lang === 'ja';
+---
+
 <section class="terminal-drawer" data-terminal aria-hidden="true" inert>
-  <div class="terminal-frame" role="dialog" aria-modal="true" aria-label="Portfolio terminal">
+  <div class="terminal-frame" role="dialog" aria-modal="true" aria-label={ja ? 'Portfolio terminal' : 'Portfolio terminal'}>
     <div class="terminal-bar">
       <span data-terminal-title>~/portfolio</span>
-      <button type="button" data-terminal-close aria-label="Close terminal">esc</button>
+      <button type="button" data-terminal-close aria-label={ja ? 'terminalを閉じる' : 'Close terminal'}>esc</button>
     </div>
 
     <div class="terminal-screen" data-terminal-screen>
       <div class="terminal-output" data-terminal-output aria-live="polite">
-        <div class="terminal-message terminal-system">Alec's portfolio shell — type <b>help</b> to explore.</div>
+        <div class="terminal-message terminal-system">
+          {ja ? <>Alecのportfolio shell — <b>help</b> で利用可能なcommandを表示。</> : <>Alec's portfolio shell — type <b>help</b> to explore.</>}
+        </div>
       </div>
 
       <form class="terminal-form" data-terminal-form autocomplete="off">
@@ -15,19 +28,8 @@
           <span class="terminal-path" data-terminal-path>~/portfolio</span>
           <span class="terminal-chevron">❯</span>
           <span class="terminal-input-wrap">
-            <span class="terminal-input-render" aria-hidden="true">
-              <span data-terminal-render-command></span><span data-terminal-render-rest></span><span class="terminal-autosuggestion" data-terminal-suggestion></span>
-            </span>
-            <input
-              data-terminal-input
-              name="command"
-              type="text"
-              inputmode="text"
-              maxlength="128"
-              spellcheck="false"
-              autocapitalize="none"
-              aria-label="Terminal command"
-            />
+            <span class="terminal-input-render" aria-hidden="true"><span data-terminal-render-command></span><span data-terminal-render-rest></span><span class="terminal-autosuggestion" data-terminal-suggestion></span></span>
+            <input data-terminal-input name="command" type="text" inputmode="text" maxlength="128" spellcheck="false" autocapitalize="none" aria-label={ja ? 'Terminal command' : 'Terminal command'} />
           </span>
         </label>
       </form>
