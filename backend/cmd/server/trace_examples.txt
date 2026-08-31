@@ -1,0 +1,5 @@
+trace --system
+trace --network
+trace --deployment
+trace --runtime
+trace --state
