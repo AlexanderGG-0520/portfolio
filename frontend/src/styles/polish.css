@@ -27,7 +27,17 @@ html[data-mobile-nav="open"] body {
   overflow: hidden;
 }
 
-/* Give long technical prose a repeatable reading measure without flattening the layout. */
+/* Keep large headings composed, then keep long technical prose within a repeatable measure. */
+.home-copy h1,
+.architecture-heading h2,
+.case-studies-heading h2,
+.case-study-header h3,
+.evidence-heading h2,
+.evidence-system-header h3,
+.live-runtime-heading h2 {
+  text-wrap: balance;
+}
+
 .architecture-heading > p,
 .case-studies-heading > p,
 .evidence-heading > p,
@@ -126,6 +136,17 @@ html[data-mobile-nav="open"] body {
 .density-expand:hover,
 .density-expand:focus-visible {
   background-color: var(--interaction-surface);
+}
+
+.view-mode-control[aria-pressed="true"],
+.mobile-nav-links > button[data-view-mode-toggle][aria-pressed="true"] {
+  color: var(--text);
+  background: rgb(203 166 247 / .07);
+}
+
+.view-mode-control[aria-pressed="true"] strong,
+.mobile-nav-links > button[data-view-mode-toggle][aria-pressed="true"] strong {
+  color: var(--mauve);
 }
 
 /* Terminal behaves like the modal dialog it semantically is. */
