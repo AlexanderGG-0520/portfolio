@@ -6,15 +6,18 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const ariaLabel = lang === 'ja' ? '詳細表示に切り替える' : 'Switch to inspect view';
+const inspectAria = lang === 'ja' ? '詳細表示に切り替える' : 'Switch to inspect view';
+const skimAria = lang === 'ja' ? '要約表示に切り替える' : 'Switch to skim view';
 ---
 
 <button
   class="view-mode-control"
   type="button"
   data-view-mode-toggle
+  data-view-mode-skim-aria={skimAria}
+  data-view-mode-inspect-aria={inspectAria}
   aria-pressed="false"
-  aria-label={ariaLabel}
+  aria-label={inspectAria}
 >
   <span>view</span>
   <i aria-hidden="true">/</i>
