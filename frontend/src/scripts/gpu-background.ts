@@ -72,22 +72,60 @@ if (canvas) {
         const time = gl.getUniformLocation(program, 'time');
         const variantUniform = gl.getUniformLocation(program, 'variant');
         const variant = ({ a: 1, b: 2, c: 3 } as Record<string, number>)[document.body.dataset.design || 'a'] || 1;
-        let px = window.innerWidth * .5;
-        let py = window.innerHeight * .5;
-        window.addEventListener('pointermove', (event) => { px = event.clientX; py = window.innerHeight - event.clientY; }, { passive: true });
+
+        let cssWidth = 1;
+        let cssHeight = 1;
+        let dpr = 1;
+        let px = .5;
+        let py = .5;
+        let pointerSeen = false;
+        let resizeFrame = 0;
 
         const resize = () => {
-          const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-          canvas.width = Math.floor(innerWidth * dpr);
-          canvas.height = Math.floor(innerHeight * dpr);
-          gl.viewport(0, 0, canvas.width, canvas.height);
+          const rect = canvas.getBoundingClientRect();
+          cssWidth = Math.max(1, rect.width);
+          cssHeight = Math.max(1, rect.height);
+          dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+          const backingWidth = Math.max(1, Math.round(cssWidth * dpr));
+          const backingHeight = Math.max(1, Math.round(cssHeight * dpr));
+
+          if (canvas.width !== backingWidth) canvas.width = backingWidth;
+          if (canvas.height !== backingHeight) canvas.height = backingHeight;
+          gl.viewport(0, 0, backingWidth, backingHeight);
+
+          if (!pointerSeen) {
+            px = cssWidth * .5;
+            py = cssHeight * .5;
+          }
         };
+
+        const scheduleResize = () => {
+          if (resizeFrame) cancelAnimationFrame(resizeFrame);
+          resizeFrame = requestAnimationFrame(() => {
+            resizeFrame = 0;
+            resize();
+          });
+        };
+
+        window.addEventListener('pointermove', (event) => {
+          const rect = canvas.getBoundingClientRect();
+          pointerSeen = true;
+          px = event.clientX - rect.left;
+          py = rect.bottom - event.clientY;
+        }, { passive: true });
+
         resize();
-        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('resize', scheduleResize, { passive: true });
+
+        if ('ResizeObserver' in window) {
+          const observer = new ResizeObserver(scheduleResize);
+          observer.observe(canvas);
+        }
 
         const render = (now: number) => {
           gl.uniform2f(resolution, canvas.width, canvas.height);
-          gl.uniform2f(pointer, px * canvas.width / innerWidth, py * canvas.height / innerHeight);
+          gl.uniform2f(pointer, px * dpr, py * dpr);
           gl.uniform1f(time, reduceMotion ? 0 : now / 1000);
           gl.uniform1f(variantUniform, variant);
           gl.drawArrays(gl.TRIANGLES, 0, 3);
