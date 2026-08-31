@@ -1,0 +1,117 @@
+---
+import '../styles/architecture.css';
+---
+
+<section id="architecture" class="architecture-layer shell" data-architecture-layer aria-labelledby="architecture-title">
+  <header class="architecture-heading">
+    <div>
+      <span class="architecture-index">01 / architecture</span>
+      <h2 id="architecture-title">One system.<br />Several responsibility boundaries.</h2>
+    </div>
+
+    <p>
+      The point is not the number of technologies. It is how each layer owns a different part of the system,
+      from public traffic to persistent state and the physical machine underneath it.
+    </p>
+  </header>
+
+  <div class="architecture-map" data-architecture-map>
+    <div class="architecture-spine" aria-hidden="true"></div>
+
+    <div class="architecture-origin architecture-reveal" style="--step: 0">
+      <span class="architecture-label">PUBLIC</span>
+      <strong>Internet</strong>
+      <small>two traffic paths / one operating platform</small>
+    </div>
+
+    <div class="architecture-lanes architecture-reveal" style="--step: 1">
+      <article class="architecture-lane architecture-lane-web">
+        <span class="architecture-label">WEB</span>
+        <div class="lane-flow" aria-hidden="true"><i></i></div>
+        <strong>Portfolio</strong>
+        <p>Astro frontend ↔ Go API</p>
+        <small>HTTP(S) / application surface</small>
+      </article>
+
+      <article class="architecture-lane architecture-lane-game">
+        <span class="architecture-label">MINECRAFT EDGE</span>
+        <div class="lane-flow" aria-hidden="true"><i></i></div>
+        <strong>mc-router</strong>
+        <p>protocol-aware routing</p>
+        <small>Java handshake / TCP :25565</small>
+      </article>
+    </div>
+
+    <div class="architecture-workloads architecture-reveal" style="--step: 2">
+      <div class="workload-note">
+        <span class="architecture-label">STATEFUL RUNTIME</span>
+        <strong>Minecartainer</strong>
+        <small>container lifecycle / persistent world state</small>
+      </div>
+      <span class="workload-join" aria-hidden="true">↘</span>
+    </div>
+
+    <div class="architecture-platform architecture-reveal" style="--step: 3">
+      <div class="platform-title">
+        <span class="architecture-label">PLATFORM</span>
+        <strong>Kubernetes</strong>
+        <small>desired → ready</small>
+      </div>
+
+      <div class="platform-services" aria-label="Kubernetes platform responsibilities">
+        <span>Cilium <small>network</small></span>
+        <span>Longhorn <small>storage</small></span>
+        <span>Argo CD <small>delivery</small></span>
+        <span>CRI-O <small>runtime</small></span>
+      </div>
+    </div>
+
+    <div class="architecture-nodes architecture-reveal" style="--step: 4">
+      <div>
+        <span class="architecture-label">CONTROL PLANE VM</span>
+        <strong>cp-01</strong>
+        <small>cluster control / etcd</small>
+      </div>
+      <div>
+        <span class="architecture-label">WORKER VM</span>
+        <strong>worker-01</strong>
+        <small>application workloads</small>
+      </div>
+    </div>
+
+    <div class="architecture-proxmox architecture-reveal" style="--step: 5">
+      <span class="architecture-label">VIRTUALIZATION</span>
+      <strong>Proxmox VE</strong>
+      <small>separates VM lifecycle from Kubernetes workload lifecycle</small>
+    </div>
+
+    <div class="architecture-hardware architecture-reveal" style="--step: 6">
+      <div>
+        <span class="architecture-label">PHYSICAL FAILURE DOMAIN</span>
+        <strong>1 host</strong>
+      </div>
+      <p>
+        Control Plane and Worker are logically separated today, but they still share one physical server.
+        The design can grow into additional physical nodes without pretending the current setup is HA.
+      </p>
+    </div>
+  </div>
+
+  <div class="architecture-principle architecture-reveal" style="--step: 7">
+    <span class="architecture-label">DESIGN PRINCIPLE</span>
+    <p>
+      Software is not finished at the process boundary. Routing, runtime lifecycle, persistent state,
+      orchestration and the infrastructure below it are part of the system I design and operate.
+    </p>
+  </div>
+
+  <div class="architecture-next" aria-hidden="true">
+    <span>02 / case studies</span>
+    <i></i>
+    <span>descend further</span>
+  </div>
+</section>
+
+<script>
+  import '../scripts/architecture.ts';
+</script>
