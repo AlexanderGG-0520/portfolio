@@ -9,7 +9,11 @@ const fallback = `/${defaultLocale}/`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content="index,follow" />
+    <meta name="description" content="Alec — Backend, Infrastructure and Systems Engineering portfolio." />
+    <link rel="alternate" hreflang="en" href="/en/" />
+    <link rel="alternate" hreflang="ja" href="/ja/" />
+    <link rel="alternate" hreflang="x-default" href="/" />
     <title>Alec — Portfolio</title>
     <script is:inline define:vars={{ fallback }}>
       const prefersJapanese = (navigator.languages ?? [navigator.language]).some((language) =>
