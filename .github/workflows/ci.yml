@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Verify content authority boundaries
         shell: bash
@@ -38,9 +40,16 @@ jobs:
             exit 1
           fi
 
+      - name: Verify dependency lock contract
+        shell: bash
+        run: |
+          test -f frontend/package-lock.json
+          grep -q '"lockfileVersion": 3' frontend/package-lock.json
+          grep -q '"astro": "7.2.9"' frontend/package-lock.json
+
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Build frontend
         working-directory: frontend
