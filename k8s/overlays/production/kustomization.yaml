@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: ghcr.io/alexandergg-0520/portfolio
+    digest: sha256:9c501ad619b1a06bcba149ca83bc5b624728dc4ed314bebe9d19201f7e1b8ae1
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: portfolio
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: PORTFOLIO_ENVIRONMENT
+          value: production
