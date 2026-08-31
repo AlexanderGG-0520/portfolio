@@ -61,9 +61,7 @@ func TestRunTerminalCommandClear(t *testing.T) {
 }
 
 func TestTerminalEndpoint(t *testing.T) {
-	req := httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader(`{"command":"projects"}`))
-	req.Body = http.NoBody
-	req = httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader("{\"command\":\"projects\"}"))
+	req := httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader("{\"command\":\"projects\"}"))
 	req.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
 	newHandler(t.TempDir()).ServeHTTP(recorder, req)
