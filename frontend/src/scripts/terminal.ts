@@ -33,6 +33,7 @@ const commands = [
   'projects',
   'stack',
   'trace',
+  'runtime',
   'health',
   'pwd',
   'ls',
