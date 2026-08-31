@@ -47,12 +47,7 @@ jobs:
         id: build
         shell: bash
         run: |
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            version="$GITHUB_REF_NAME"
-          else
-            version="main"
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "version=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
           echo "built_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
 
       - name: Build and push image
