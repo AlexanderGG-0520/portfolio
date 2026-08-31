@@ -12,6 +12,6 @@ interface Props {
 const { variant } = Astro.props;
 ---
 
-<BaseLayout title={`Alec — Design ${variant.toUpperCase()}`} design={variant}>
+<BaseLayout title={`Alec — Design ${variant.toUpperCase()}`} design={variant} robots="noindex,nofollow">
   <DesignPreview variant={variant} />
 </BaseLayout>
