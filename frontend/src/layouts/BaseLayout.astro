@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   lang?: string;
   design?: 'a' | 'b' | 'c' | 'index';
+  robots?: 'index,follow' | 'noindex,nofollow';
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   description = 'Alec — Backend, Infrastructure and Systems Engineering portfolio.',
   lang = 'en',
   design = 'index',
+  robots = 'index,follow',
 } = Astro.props;
 ---
 
@@ -25,6 +27,7 @@ const {
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#11111b" />
     <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
     <title>{title}</title>
   </head>
   <body data-design={design}>
