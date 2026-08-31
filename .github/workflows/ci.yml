@@ -48,7 +48,9 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:8080/api/profile | grep -q 'Minecartainer'
-          curl --fail --silent http://127.0.0.1:8080/ | grep -q 'From code'
+          curl --fail --silent http://127.0.0.1:8080/ | grep -q '/en/'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'From code'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'lang="en"'
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
