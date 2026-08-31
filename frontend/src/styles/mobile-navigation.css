@@ -3,9 +3,19 @@
   display: none;
 }
 
-@media (max-width: 980px) {
+/*
+ * Compact navigation is an interaction/layout contract, not an OS check.
+ * Touch-first tablets can expose a CSS viewport wider than the old 980px
+ * breakpoint (especially in landscape), so do not fall back to the dense
+ * desktop navigation merely because device pixels make the viewport look wide.
+ */
+@media (max-width: 1180px), (hover: none) and (pointer: coarse) {
   .home-header {
     grid-template-columns: 1fr auto auto;
+  }
+
+  .home-nav {
+    display: none;
   }
 
   .mobile-nav-trigger {
