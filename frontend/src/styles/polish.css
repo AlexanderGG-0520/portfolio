@@ -96,6 +96,13 @@ html[data-mobile-nav="open"] body {
   box-shadow: 0 0 0 4px var(--focus-ring-soft);
 }
 
+/* Full-width mobile rows live inside an overflow container, so keep their ring visible inside it. */
+.mobile-nav-links > a:focus-visible,
+.mobile-nav-links > button:focus-visible {
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 1px var(--focus-ring-soft);
+}
+
 /* Avoid a second inset focus treatment on evidence cards. */
 .evidence-record:focus-visible {
   outline-offset: 3px;
@@ -150,6 +157,14 @@ html[data-mobile-nav="open"] body {
 }
 
 /* Terminal behaves like the modal dialog it semantically is. */
+.terminal-drawer .terminal-frame {
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.mobile-nav-backdrop {
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
 .terminal-drawer .terminal-bar button {
   min-width: 32px;
   min-height: 32px;
