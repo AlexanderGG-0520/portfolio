@@ -1,9 +1,9 @@
 /*
- * Mobile viewport contract.
+ * Mobile layout contract.
  *
- * Mobile browsers already map physical pixels to CSS pixels through the viewport.
- * Keep layout sizing in that CSS-pixel space instead of compensating with large,
- * breakpoint-specific vw multipliers or fixed-width decorative geometry.
+ * The mobile composition uses CSS pixels as its logical coordinate space.
+ * Viewport width/height decide whether the mobile layout is active, but do not
+ * continuously scale the Hero, topology field or its X/Y geometry.
  */
 
 html {
@@ -21,81 +21,90 @@ body {
   min-width: 0;
 }
 
-/*
- * One continuous heading scale below the desktop composition.
- * The old 8.1vw -> 11vw -> 17vw jumps made a tiny viewport-width change alter
- * the perceived scale of the entire page, especially around 980px and 680px.
- */
 @media (max-width: 980px) {
   .home-copy {
     width: 100%;
   }
 
+  /* Tablet is a discrete composition, not a continuously zooming desktop. */
   .home-copy h1 {
-    font-size: clamp(2.85rem, calc(2rem + 4.5vw), 4.8rem);
+    font-size: 4rem;
   }
 
   html[lang="ja"] .home-copy h1 {
     max-width: 100%;
-    font-size: clamp(2.65rem, calc(2.1rem + 2.9vw), 3.95rem);
+    font-size: 3.55rem;
   }
 }
 
 @media (max-width: 680px) {
-  /* A fixed gutter gives every phone the same visual density in CSS pixels. */
+  /* Stable CSS-pixel gutters. */
   .shell {
     width: calc(100% - 32px);
     max-width: 1440px;
   }
 
+  /*
+   * Mobile Hero is content-driven. Browser chrome / visual viewport height must
+   * not resize the main composition while the user scrolls.
+   */
   .home-hero {
-    min-height: calc(100svh - 70px);
-    padding-top: 110px;
-    padding-bottom: 64px;
+    min-height: 42rem;
+    align-content: start;
+    padding-top: 6.875rem;
+    padding-bottom: 6rem;
   }
 
   .home-copy {
-    padding-bottom: 44px;
+    padding-top: 0;
+    padding-bottom: 2.75rem;
+  }
+
+  .home-copy h1 {
+    font-size: 3.2rem;
+  }
+
+  html[lang="ja"] .home-copy h1 {
+    font-size: 2.75rem;
+    line-height: 1.02;
   }
 
   .home-copy .lede {
     max-width: 34rem;
-    margin-top: 22px;
+    margin-top: 1.375rem;
   }
 
   .home-actions {
-    margin-top: 28px;
+    margin-top: 1.75rem;
   }
 
   /*
-   * Decorative topology follows the viewport instead of becoming a 560px object
-   * on every phone. Its left anchor is stable, while overflow is intentionally
-   * clipped as atmosphere behind the readable content.
+   * Decorative topology owns a fixed logical square on mobile. Changing the
+   * viewport width/height changes only how much of that square is visible;
+   * the circle, axes and child geometry do not rescale.
    */
   .system-field {
-    width: min(128vw, 520px);
-    left: 8%;
+    width: 30rem;
+    height: 30rem;
+    left: 4.5rem;
     right: auto;
-    top: 68%;
+    top: 21rem;
+    transform: none;
     opacity: .3;
   }
 
   .system-object {
-    min-width: clamp(150px, 44vw, 190px);
+    min-width: 10.5rem;
   }
 
   .home-footnote {
-    bottom: 16px;
+    bottom: 1rem;
   }
 }
 
 @media (max-width: 380px) {
   .shell {
     width: calc(100% - 28px);
-  }
-
-  .home-hero {
-    padding-top: 104px;
   }
 
   .home-actions {
