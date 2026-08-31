@@ -6,15 +6,23 @@ on:
       - main
     tags:
       - 'v*'
+    paths-ignore:
+      - 'k8s/**'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
+
+concurrency:
+  group: container-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -51,6 +59,7 @@ jobs:
           echo "built_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
 
       - name: Build and push image
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -66,3 +75,74 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: mode=max
           sbom: true
+
+  promote:
+    name: Promote production digest
+    needs: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'v1.33.12'
+
+      - name: Promote published digest
+        env:
+          IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path('k8s/overlays/production/kustomization.yaml')
+          text = path.read_text()
+          digest = os.environ['IMAGE_DIGEST']
+
+          if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+              raise SystemExit(f'invalid image digest: {digest!r}')
+
+          updated, count = re.subn(
+              r'(?m)^(\s*digest:\s*)sha256:[0-9a-f]{64}\s*$',
+              lambda match: f'{match.group(1)}{digest}',
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit('expected exactly one production digest field')
+
+          path.write_text(updated)
+          PY
+
+      - name: Verify production manifest
+        env:
+          IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+        shell: bash
+        run: |
+          kubectl kustomize k8s/overlays/production > /tmp/portfolio-production.yaml
+          grep -Fq "ghcr.io/alexandergg-0520/portfolio@$IMAGE_DIGEST" /tmp/portfolio-production.yaml
+
+      - name: Commit promotion
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+        shell: bash
+        run: |
+          if git diff --quiet -- k8s/overlays/production/kustomization.yaml; then
+            echo "Production already points at $IMAGE_DIGEST"
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add k8s/overlays/production/kustomization.yaml
+          git commit -m "chore(deploy): promote ${SOURCE_SHA:0:7} [skip ci]"
+          git push origin HEAD:main
