@@ -55,13 +55,27 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q '"environment":"ci"'
           curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q '"instance":"github-actions"'
           curl --fail --silent http://127.0.0.1:8080/api/runtime | grep -q "$GITHUB_SHA"
+
           curl --fail --silent http://127.0.0.1:8080/ | grep -q '/en/'
+          curl --fail --silent http://127.0.0.1:8080/ | grep -q '/ja/'
+
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'From code'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'lang="en"'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The architecture'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Home Kubernetes Platform'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'Operational evidence is not'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'The browser asks.'
+          curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '/ja/'
+
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'lang="ja"'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'コードから'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '一つのシステム'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'アーキテクチャを具体化する'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '基盤ごと乗り換える'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '運用の証拠はそうじゃない'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q 'ブラウザが問い'
+          curl --fail --silent http://127.0.0.1:8080/ja/ | grep -q '/en/'
+
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'GET'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '/api/runtime'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q '36c75dc'
@@ -73,6 +87,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-toggle'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-view-mode-inspect'
           curl --fail --silent http://127.0.0.1:8080/en/ | grep -q 'data-inspect-detail'
+
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
@@ -85,6 +100,7 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '{"command":"runtime","cwd":"/"}' \
             http://127.0.0.1:8080/api/terminal | grep -q 'GET /api/runtime'
+
           curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
           curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
           curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'
