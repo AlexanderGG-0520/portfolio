@@ -104,3 +104,40 @@ jobs:
           curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
           curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
           curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'
+
+      - name: Build container image
+        shell: bash
+        run: |
+          built_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          docker build \
+            --build-arg VERSION=ci \
+            --build-arg REVISION="$GITHUB_SHA" \
+            --build-arg BUILD_TIME="$built_at" \
+            --tag portfolio:ci \
+            .
+
+      - name: Smoke test container image
+        shell: bash
+        run: |
+          docker run --rm --detach \
+            --name portfolio-ci \
+            --publish 127.0.0.1:18080:8080 \
+            --env PORTFOLIO_ENVIRONMENT=ci \
+            --env PORTFOLIO_ORCHESTRATOR=docker \
+            --env PORTFOLIO_INSTANCE=github-actions \
+            portfolio:ci
+          trap 'docker rm -f portfolio-ci >/dev/null 2>&1 || true' EXIT
+
+          for _ in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:18080/api/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q '"version":"ci"'
+          curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q "\"revision\":\"$GITHUB_SHA\""
+          curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q '"environment":"ci"'
+          curl --fail --silent http://127.0.0.1:18080/api/runtime | grep -q '"orchestrator":"docker"'
+          curl --fail --silent http://127.0.0.1:18080/en/ | grep -q 'From code'
+          curl --fail --silent http://127.0.0.1:18080/ja/ | grep -q 'コードから'
