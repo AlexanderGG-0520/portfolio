@@ -4,6 +4,7 @@ import TerminalPanel from '../../components/TerminalPanel.astro';
 import ArchitectureLayer from '../../components/ArchitectureLayer.astro';
 import CaseStudiesLayer from '../../components/CaseStudiesLayer.astro';
 import EvidenceOperationLayer from '../../components/EvidenceOperationLayer.astro';
+import LiveRuntimeLayer from '../../components/LiveRuntimeLayer.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import MobileNavigation from '../../components/MobileNavigation.astro';
 import { supportedLocales, type Locale } from '../../i18n/locales';
@@ -31,6 +32,7 @@ const { lang } = Astro.props;
       <a href="#architecture">system</a>
       <a href="#case-studies">cases</a>
       <a href="#evidence">evidence</a>
+      <a href="#runtime">runtime</a>
       <button type="button" data-terminal-open>terminal ~</button>
       <a href="https://github.com/AlexanderGG-0520" rel="me">github ↗</a>
     </nav>
@@ -109,6 +111,7 @@ const { lang } = Astro.props;
     <ArchitectureLayer />
     <CaseStudiesLayer />
     <EvidenceOperationLayer />
+    <LiveRuntimeLayer />
   </main>
 
   <SiteFooter />
