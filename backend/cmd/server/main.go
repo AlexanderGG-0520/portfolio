@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	pathpkg "path"
 	"runtime"
 	"strings"
 	"syscall"
@@ -30,13 +31,132 @@ type design struct {
 
 type terminalRequest struct {
 	Command string `json:"command"`
+	CWD     string `json:"cwd"`
+}
+
+type terminalEntry struct {
+	Name string `json:"name"`
+	Kind string `json:"kind"`
 }
 
 type terminalResponse struct {
-	Command  string   `json:"command"`
-	Lines    []string `json:"lines"`
-	ExitCode int      `json:"exitCode"`
-	Clear    bool     `json:"clear,omitempty"`
+	Command  string          `json:"command"`
+	CWD      string          `json:"cwd"`
+	Lines    []string        `json:"lines"`
+	Entries  []terminalEntry `json:"entries,omitempty"`
+	ExitCode int             `json:"exitCode"`
+	Clear    bool            `json:"clear,omitempty"`
+	Close    bool            `json:"close,omitempty"`
+}
+
+type virtualNode struct {
+	Dir      bool
+	Children []terminalEntry
+	Lines    []string
+}
+
+var portfolioFS = map[string]virtualNode{
+	"/": {
+		Dir: true,
+		Children: []terminalEntry{
+			{Name: "architecture/", Kind: "dir"},
+			{Name: "projects/", Kind: "dir"},
+			{Name: "infrastructure/", Kind: "dir"},
+			{Name: "about/", Kind: "dir"},
+			{Name: "README.md", Kind: "file"},
+		},
+	},
+	"/README.md": {
+		Lines: []string{
+			"Alec's portfolio",
+			"",
+			"Software is presented as a complete system: code, runtime, network edge, and infrastructure.",
+			"Use `ls`, `cd`, and `cat` to explore the virtual portfolio filesystem.",
+		},
+	},
+	"/architecture": {
+		Dir: true,
+		Children: []terminalEntry{
+			{Name: "system.md", Kind: "file"},
+			{Name: "boundaries.md", Kind: "file"},
+		},
+	},
+	"/architecture/system.md": {
+		Lines: []string{
+			"Internet -> mc-router -> workloads -> Kubernetes -> Proxmox / physical infrastructure",
+			"",
+			"The portfolio follows the same idea: software is designed through the infrastructure that actually runs it.",
+		},
+	},
+	"/architecture/boundaries.md": {
+		Lines: []string{
+			"Minecartainer: stateful workload lifecycle",
+			"mc-router: protocol-aware network edge",
+			"Home Kubernetes Platform: infrastructure and operations",
+		},
+	},
+	"/projects": {
+		Dir: true,
+		Children: []terminalEntry{
+			{Name: "minecartainer/", Kind: "dir"},
+			{Name: "mc-router/", Kind: "dir"},
+			{Name: "yw1-iv-calculator/", Kind: "dir"},
+		},
+	},
+	"/projects/minecartainer": {
+		Dir: true,
+		Children: []terminalEntry{{Name: "README.md", Kind: "file"}},
+	},
+	"/projects/minecartainer/README.md": {
+		Lines: []string{
+			"Minecartainer",
+			"Stateful workload / container lifecycle engineering.",
+			"Treat the container as disposable. Treat the world as valuable.",
+		},
+	},
+	"/projects/mc-router": {
+		Dir: true,
+		Children: []terminalEntry{{Name: "README.md", Kind: "file"}},
+	},
+	"/projects/mc-router/README.md": {
+		Lines: []string{
+			"mc-router",
+			"Protocol-aware network edge engineering for independent Minecraft workloads.",
+			"Routing, monitoring, lifecycle, and gameplay state keep explicit responsibility boundaries.",
+		},
+	},
+	"/projects/yw1-iv-calculator": {
+		Dir: true,
+		Children: []terminalEntry{{Name: "README.md", Kind: "file"}},
+	},
+	"/projects/yw1-iv-calculator/README.md": {
+		Lines: []string{
+			"YW1 IV Calculator",
+			"A web application for reasoning about Yo-kai Watch 1 individual-value and training outcomes.",
+		},
+	},
+	"/infrastructure": {
+		Dir: true,
+		Children: []terminalEntry{{Name: "home-kubernetes.md", Kind: "file"}},
+	},
+	"/infrastructure/home-kubernetes.md": {
+		Lines: []string{
+			"Home Kubernetes Platform",
+			"Proxmox provides the virtualization layer; Kubernetes provides the application platform.",
+			"Control Plane and Worker responsibilities stay logically separated even on a single physical host.",
+		},
+	},
+	"/about": {
+		Dir: true,
+		Children: []terminalEntry{{Name: "profile.md", Kind: "file"}},
+	},
+	"/about/profile.md": {
+		Lines: []string{
+			"Alec",
+			"Backend / Infrastructure / Systems Engineering",
+			"Builds software as complete systems, through the infrastructure that runs them.",
+		},
+	},
 }
 
 func main() {
@@ -118,36 +238,40 @@ func newHandler(frontendDir string) http.Handler {
 			return
 		}
 
-		writeJSON(w, http.StatusOK, runTerminalCommand(command))
+		writeJSON(w, http.StatusOK, runTerminalCommand(command, request.CWD))
 	})
 
 	mux.Handle("/", http.FileServer(http.Dir(frontendDir)))
 	return securityHeaders(mux)
 }
 
-func runTerminalCommand(command string) terminalResponse {
+func runTerminalCommand(command, requestedCWD string) terminalResponse {
+	cwd := validCWD(requestedCWD)
 	fields := strings.Fields(command)
+	response := terminalResponse{Command: command, CWD: cwd, Lines: []string{}, ExitCode: 0}
 	if len(fields) == 0 {
-		return terminalResponse{Command: command, Lines: []string{}, ExitCode: 0}
+		return response
 	}
 
 	name := strings.ToLower(fields[0])
-	response := terminalResponse{Command: command, Lines: []string{}, ExitCode: 0}
 
 	switch name {
 	case "help":
 		response.Lines = []string{
-			"available commands:",
-			"  fastfetch   portfolio/system summary",
-			"  whoami      engineering identity",
-			"  projects    featured systems",
-			"  stack       current portfolio stack",
-			"  health      backend health/runtime",
-			"  pwd         current portfolio path",
-			"  ls          visible portfolio layers",
-			"  github      GitHub profile",
-			"  clear       clear this terminal",
-			"  help        show this list",
+			"fish-like portfolio commands:",
+			"  fastfetch      portfolio/system summary",
+			"  whoami         engineering identity",
+			"  projects       featured systems",
+			"  stack          current portfolio stack",
+			"  health         backend health/runtime",
+			"  pwd            print virtual portfolio path",
+			"  ls [path]      list virtual portfolio entries",
+			"  cd [path]      move through portfolio layers",
+			"  cat <file>     read a portfolio document",
+			"  github         GitHub profile",
+			"  clear          clear this terminal",
+			"  exit           close this terminal",
+			"  help           show this list",
 		}
 	case "fastfetch", "neofetch":
 		response.Lines = []string{
@@ -161,7 +285,8 @@ func runTerminalCommand(command string) terminalResponse {
 			"Edge:             mc-router",
 			"Stateful runtime: Minecartainer",
 			"Theme:            Catppuccin Mocha",
-			"TTY:              portfolio / allowlisted API",
+			"Shell:            fish-inspired virtual portfolio shell",
+			"Terminal:         Ghostty-inspired / Noto Sans Mono CJK JP",
 		}
 	case "whoami":
 		response.Lines = []string{"Alec — Backend / Infrastructure / Systems Engineering", "Builds software through the infrastructure that actually runs it."}
@@ -180,19 +305,114 @@ func runTerminalCommand(command string) terminalResponse {
 	case "health":
 		response.Lines = []string{"portfolio-backend: healthy", "runtime: " + runtime.Version()}
 	case "pwd":
-		response.Lines = []string{"/home/alec/portfolio"}
+		response.Lines = []string{displayVirtualPath(cwd)}
 	case "ls":
-		response.Lines = []string{"architecture/  projects/  infrastructure/  about/"}
+		target := cwd
+		if len(fields) > 1 {
+			target = normalizeVirtualPath(cwd, fields[1])
+		}
+		node, ok := portfolioFS[target]
+		if !ok {
+			response.ExitCode = 2
+			response.Lines = []string{"ls: " + fields[len(fields)-1] + ": No such file or directory"}
+			break
+		}
+		if !node.Dir {
+			response.Entries = []terminalEntry{{Name: pathpkg.Base(target), Kind: "file"}}
+			break
+		}
+		response.Entries = node.Children
+	case "cd":
+		target := "/"
+		if len(fields) > 1 {
+			target = normalizeVirtualPath(cwd, fields[1])
+		}
+		node, ok := portfolioFS[target]
+		if !ok {
+			response.ExitCode = 1
+			response.Lines = []string{"cd: " + fields[len(fields)-1] + ": No such file or directory"}
+			break
+		}
+		if !node.Dir {
+			response.ExitCode = 1
+			response.Lines = []string{"cd: " + fields[len(fields)-1] + ": Not a directory"}
+			break
+		}
+		response.CWD = target
+	case "cat":
+		if len(fields) < 2 {
+			response.ExitCode = 1
+			response.Lines = []string{"cat: missing operand"}
+			break
+		}
+		target := normalizeVirtualPath(cwd, fields[1])
+		node, ok := portfolioFS[target]
+		if !ok {
+			response.ExitCode = 1
+			response.Lines = []string{"cat: " + fields[1] + ": No such file or directory"}
+			break
+		}
+		if node.Dir {
+			response.ExitCode = 1
+			response.Lines = []string{"cat: " + fields[1] + ": Is a directory"}
+			break
+		}
+		response.Lines = node.Lines
 	case "github":
 		response.Lines = []string{"https://github.com/AlexanderGG-0520"}
 	case "clear":
 		response.Clear = true
+	case "exit":
+		response.Close = true
 	default:
 		response.ExitCode = 127
-		response.Lines = []string{name + ": command not found", "try: help"}
+		response.Lines = []string{name + ": command not found", "fish: type `help` to list portfolio commands"}
 	}
 
 	return response
+}
+
+func validCWD(requested string) string {
+	if requested == "" {
+		return "/"
+	}
+	cleaned := normalizeVirtualPath("/", requested)
+	node, ok := portfolioFS[cleaned]
+	if !ok || !node.Dir {
+		return "/"
+	}
+	return cleaned
+}
+
+func normalizeVirtualPath(cwd, target string) string {
+	target = strings.TrimSpace(target)
+	if target == "" || target == "~" || target == "~/portfolio" {
+		return "/"
+	}
+	if strings.HasPrefix(target, "~/portfolio/") {
+		target = "/" + strings.TrimPrefix(target, "~/portfolio/")
+	}
+
+	var cleaned string
+	if strings.HasPrefix(target, "/") {
+		cleaned = pathpkg.Clean(target)
+	} else {
+		cleaned = pathpkg.Clean(pathpkg.Join(cwd, target))
+	}
+	if cleaned == "." {
+		return "/"
+	}
+	if !strings.HasPrefix(cleaned, "/") {
+		cleaned = "/" + cleaned
+	}
+	return cleaned
+}
+
+func displayVirtualPath(cwd string) string {
+	if cwd == "/" {
+		return "~/portfolio"
+	}
+	return "~/portfolio" + cwd
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {
