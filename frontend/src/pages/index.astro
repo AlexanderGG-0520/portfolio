@@ -1,93 +1,23 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TerminalPanel from '../components/TerminalPanel.astro';
-import ArchitectureLayer from '../components/ArchitectureLayer.astro';
-import '../styles/home.css';
-import '../styles/terminal.css';
-import '../styles/cta.css';
+import { defaultLocale } from '../i18n/locales';
+
+const destination = `/${defaultLocale}/`;
 ---
 
-<BaseLayout title="Alec — Backend / Infrastructure / Systems Engineering" design="c">
-  <header class="home-header shell">
-    <a class="home-brand" href="#top" aria-label="Back to top">alec<span>@portfolio</span></a>
-
-    <nav class="home-nav" aria-label="Primary navigation">
-      <a href="#architecture">system</a>
-      <button type="button" data-terminal-open>terminal ~</button>
-      <a href="https://github.com/AlexanderGG-0520" rel="me">github ↗</a>
-    </nav>
-
-    <div class="home-runtime" aria-label="Portfolio backend status">
-      <span class="status-dot"></span>
-      <span>backend:</span>
-      <span data-api-status>connecting</span>
-    </div>
-  </header>
-
-  <main id="top" class="home-main">
-    <section class="home-hero shell" aria-labelledby="hero-title">
-      <div class="home-command prompt fish-hero-prompt" aria-hidden="true">
-        <span>~/portfolio</span> <b>❯</b> trace --system
-      </div>
-
-      <div class="home-copy">
-        <p class="eyebrow" data-profile-role>Backend / Infrastructure / Systems Engineering</p>
-        <h1 id="hero-title">From code<br />to running system.</h1>
-        <p class="lede" data-profile-thesis>
-          I build software as complete systems, through the infrastructure that runs them.
-        </p>
-
-        <div class="home-actions" aria-label="Homepage actions">
-          <a class="terminal-link" href="#architecture" data-architecture-trigger>trace architecture <span>→</span></a>
-          <button class="terminal-link" type="button" data-terminal-open>open terminal <span>_</span></button>
-        </div>
-      </div>
-
-      <div id="system" class="system-field" aria-label="Alec's software system layers">
-        <div class="field-ring field-ring-inner" aria-hidden="true"></div>
-        <div class="field-axis axis-a" aria-hidden="true"></div>
-        <div class="field-axis axis-b" aria-hidden="true"></div>
-        <div class="field-pulse pulse-a" aria-hidden="true"></div>
-        <div class="field-pulse pulse-b" aria-hidden="true"></div>
-
-        <div class="system-object object-router">
-          <span class="object-kind">01 / edge</span>
-          <strong>mc-router</strong>
-          <span class="object-detail">tcp · java handshake · :25565</span>
-        </div>
-
-        <div class="system-object object-kubernetes">
-          <span class="object-kind">02 / platform</span>
-          <strong>Kubernetes</strong>
-          <span class="object-detail">reconcile · network · storage</span>
-        </div>
-
-        <div class="system-object object-minecartainer">
-          <span class="object-kind">03 / runtime</span>
-          <strong>Minecartainer</strong>
-          <span class="object-detail">stateful workload lifecycle</span>
-        </div>
-
-        <div class="system-object object-portfolio">
-          <span class="object-kind">04 / this site</span>
-          <strong>Portfolio</strong>
-          <span class="object-detail">Astro ↔ Go API</span>
-        </div>
-
-        <span class="field-readout readout-handshake">↳ protocol / handshake</span>
-        <span class="field-readout readout-reconcile">↳ desired → ready</span>
-        <span class="field-readout readout-state">↳ pvc / persistent state</span>
-      </div>
-
-      <div class="home-footnote" aria-hidden="true">
-        <span>signal field / live system</span>
-        <span class="footnote-line"></span>
-        <span>scroll to descend</span>
-      </div>
-    </section>
-
-    <ArchitectureLayer />
-  </main>
-
-  <TerminalPanel />
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <link rel="canonical" href={destination} />
+    <title>Alec — Portfolio</title>
+    <script is:inline define:vars={{ destination }}>
+      window.location.replace(destination);
+    </script>
+  </head>
+  <body>
+    <a href={destination}>Continue to English</a>
+  </body>
+</html>
