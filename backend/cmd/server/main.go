@@ -84,7 +84,7 @@ var portfolioFS = map[string]virtualNode{
 	"/architecture/system.md": {
 		Lines: []string{
 			"Internet",
-			"├─ web        → Portfolio / Astro ↔ Go API",
+			"├─ web        → Cloudflare Tunnel → portfolio Service → Go / Astro",
 			"└─ minecraft  → mc-router → Minecraft workloads",
 			"                             └─ Minecartainer / stateful runtime",
 			"",
@@ -269,7 +269,7 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 			"  whoami          engineering identity",
 			"  projects        featured systems",
 			"  stack           current portfolio stack",
-			"  trace --system  trace the running system from public edge to physical host",
+			"  trace <target>  trace system / network / deployment / runtime / state",
 			"  runtime         live Go process / release / deployment snapshot",
 			"  health          backend health/runtime",
 			"  pwd             print virtual portfolio path",
@@ -385,71 +385,7 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 }
 
 func runTraceCommand(fields []string) ([]string, int) {
-	usage := []string{
-		"usage: trace --system",
-		"       trace --help",
-	}
-
-	if len(fields) == 1 {
-		return usage, 0
-	}
-	if len(fields) != 2 {
-		return append([]string{"trace: expected one target"}, usage...), 2
-	}
-
-	switch strings.ToLower(fields[1]) {
-	case "--help", "-h":
-		return append([]string{
-			"trace the portfolio's running system through its responsibility boundaries",
-			"",
-		}, usage...), 0
-	case "--system":
-		return []string{
-			"trace: ~/portfolio/system",
-			"",
-			"PUBLIC",
-			"Internet",
-			"├─ web        → Portfolio / Astro ↔ Go API",
-			"└─ minecraft  → mc-router → Minecraft workloads",
-			"                             └─ Minecartainer / stateful runtime",
-			"",
-			"                    ↓ platform boundary",
-			"",
-			"PLATFORM",
-			"Kubernetes",
-			"├─ Cilium     network",
-			"├─ Longhorn   storage",
-			"├─ Argo CD    delivery",
-			"└─ CRI-O      runtime",
-			"",
-			"                    ↓ VM boundary",
-			"",
-			"VIRTUAL MACHINES",
-			"├─ cp-01      control plane / etcd",
-			"└─ worker-01  application workloads",
-			"",
-			"                    ↓ virtualization boundary",
-			"",
-			"Proxmox VE",
-			"",
-			"                    ↓ physical boundary",
-			"",
-			"PHYSICAL FAILURE DOMAIN",
-			"1 host",
-			"",
-			"responsibility boundaries:",
-			"  edge      routing / protocol",
-			"  runtime   persistent workload lifecycle",
-			"  platform  reconciliation / network / storage / delivery",
-			"  vm        control-plane and worker lifecycle separation",
-			"  physical  current single-host failure domain",
-			"",
-			"trace complete",
-			"hint: cd architecture && ls",
-		}, 0
-	default:
-		return append([]string{"trace: unsupported target: " + fields[1]}, usage...), 2
-	}
+	return runTrace(fields)
 }
 
 func validCWD(requested string) string {
