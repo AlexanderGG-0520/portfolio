@@ -206,6 +206,8 @@ func newHandler(frontendDir string) http.Handler {
 		})
 	})
 
+	registerRuntimeHandlers(mux)
+
 	mux.HandleFunc("GET /api/profile", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, profile{
 			Name:   "Alec",
@@ -268,6 +270,7 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 			"  projects        featured systems",
 			"  stack           current portfolio stack",
 			"  trace --system  trace the running system from public edge to physical host",
+			"  runtime         live Go process / release / deployment snapshot",
 			"  health          backend health/runtime",
 			"  pwd             print virtual portfolio path",
 			"  ls [path]       list virtual portfolio entries",
@@ -309,6 +312,8 @@ func runTerminalCommand(command, requestedCWD string) terminalResponse {
 		}
 	case "trace":
 		response.Lines, response.ExitCode = runTraceCommand(fields)
+	case "runtime":
+		response.Lines = runtimeCommandLines()
 	case "health":
 		response.Lines = []string{"portfolio-backend: healthy", "runtime: " + runtime.Version()}
 	case "pwd":
