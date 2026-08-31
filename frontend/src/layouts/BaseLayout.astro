@@ -3,14 +3,15 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  lang?: string;
   design?: 'a' | 'b' | 'c' | 'index';
 }
 
-const { title, design = 'index' } = Astro.props;
+const { title, lang = 'en', design = 'index' } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="ja">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
