@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '../i18n/locales';
+import { systemModel } from '../data/system-model';
 import '../styles/architecture.css';
 
 interface Props {
@@ -14,7 +15,6 @@ const c = lang === 'ja'
       title2: '複数の責務境界。',
       intro: '重要なのは技術の数ではありません。public trafficから永続state、その下の物理マシンまで、各layerがシステムのどの責務を持つかを分けています。',
       publicDetail: '2つのtraffic path / 1つの運用platform',
-      portfolioDetail: 'Astro frontend ↔ Go API',
       webDetail: 'HTTP(S) / application surface',
       routerDetail: 'protocol-aware routing',
       routerTransport: 'Java handshake / TCP :25565',
@@ -40,7 +40,6 @@ const c = lang === 'ja'
       title2: 'Several responsibility boundaries.',
       intro: 'The point is not the number of technologies. It is how each layer owns a different part of the system, from public traffic to persistent state and the physical machine underneath it.',
       publicDetail: 'two traffic paths / one operating platform',
-      portfolioDetail: 'Astro frontend ↔ Go API',
       webDetail: 'HTTP(S) / application surface',
       routerDetail: 'protocol-aware routing',
       routerTransport: 'Java handshake / TCP :25565',
@@ -86,8 +85,8 @@ const c = lang === 'ja'
         <span class="architecture-label">WEB</span>
         <div class="lane-flow" aria-hidden="true"><i></i></div>
         <strong>Portfolio</strong>
-        <p>{c.portfolioDetail}</p>
-        <small>{c.webDetail}</small>
+        <p>{systemModel.web.exposurePath}</p>
+        <small>{systemModel.web.application} · {c.webDetail}</small>
       </article>
 
       <article class="architecture-lane architecture-lane-game">
@@ -111,15 +110,15 @@ const c = lang === 'ja'
     <div class="architecture-platform architecture-reveal" style="--step: 3">
       <div class="platform-title">
         <span class="architecture-label">PLATFORM</span>
-        <strong>Kubernetes</strong>
+        <strong>{systemModel.platform.orchestrator}</strong>
         <small>{c.platformDetail}</small>
       </div>
 
       <div class="platform-services" aria-label={c.platformAria}>
-        <span>Cilium <small>{c.network}</small></span>
-        <span>Longhorn <small>{c.storage}</small></span>
-        <span>Argo CD <small>{c.delivery}</small></span>
-        <span>CRI-O <small>{c.runtime}</small></span>
+        <span>{systemModel.platform.network} <small>{c.network}</small></span>
+        <span>{systemModel.platform.storage} <small>{c.storage}</small></span>
+        <span>{systemModel.platform.delivery} <small>{c.delivery}</small></span>
+        <span>{systemModel.platform.runtime} <small>{c.runtime}</small></span>
       </div>
     </div>
 
