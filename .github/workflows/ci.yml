@@ -62,6 +62,10 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
             http://127.0.0.1:8080/api/terminal | grep -q 'Target runtime'
+          curl --fail --silent \
+            -H 'Content-Type: application/json' \
+            -d '{"command":"trace --system","cwd":"/"}' \
+            http://127.0.0.1:8080/api/terminal | grep -q 'PHYSICAL FAILURE DOMAIN'
           curl --fail --silent http://127.0.0.1:8080/design/a/ | grep -q 'Focus Pane'
           curl --fail --silent http://127.0.0.1:8080/design/b/ | grep -q 'Tiled Systems'
           curl --fail --silent http://127.0.0.1:8080/design/c/ | grep -q 'Signal Field'

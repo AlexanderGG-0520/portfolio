@@ -32,6 +32,7 @@ const commands = [
   'whoami',
   'projects',
   'stack',
+  'trace',
   'health',
   'pwd',
   'ls',
@@ -115,6 +116,11 @@ function completionCandidates(value: string) {
   const name = trimmedStart.slice(0, firstSpace).toLowerCase();
   const argument = trimmedStart.slice(firstSpace).trimStart();
   const currentEntries = entriesByCWD[cwd] ?? [];
+
+  if (name === 'trace') {
+    return ['trace --system', 'trace --help']
+      .filter((candidate) => candidate.toLowerCase().startsWith(trimmedStart.toLowerCase()));
+  }
 
   if (name === 'cd') {
     return ['~', '..', ...currentEntries.filter((entry) => entry.kind === 'dir').map((entry) => entry.name.replace(/\/$/, ''))]
