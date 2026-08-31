@@ -78,7 +78,7 @@ const c = ja
       <a href="#evidence">{c.evidence}</a>
       <a href="#runtime">{c.runtime}</a>
       <ReadingModeControl lang={lang} />
-      <button type="button" data-terminal-open>{c.terminal}</button>
+      <button type="button" data-terminal-open aria-controls="portfolio-terminal" aria-haspopup="dialog" aria-expanded="false">{c.terminal}</button>
       <a href={`/${otherLocale}/`} hreflang={otherLocale}>{c.locale}</a>
       <a href="https://github.com/AlexanderGG-0520" rel="me">{c.github}</a>
     </nav>
@@ -96,7 +96,7 @@ const c = ja
         <p class="lede">{c.thesis}</p>
         <div class="home-actions" aria-label={c.actionsAria}>
           <a class="terminal-link" href="#architecture" data-architecture-trigger>{c.trace} <span>→</span></a>
-          <button class="terminal-link" type="button" data-terminal-open>{c.openTerminal} <span>_</span></button>
+          <button class="terminal-link" type="button" data-terminal-open aria-controls="portfolio-terminal" aria-haspopup="dialog" aria-expanded="false">{c.openTerminal} <span>_</span></button>
         </div>
       </div>
 
