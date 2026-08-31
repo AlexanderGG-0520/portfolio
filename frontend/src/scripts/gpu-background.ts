@@ -1,5 +1,6 @@
 const canvas = document.querySelector<HTMLCanvasElement>('#gpu-background');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const compactMotion = window.matchMedia('(max-width: 1180px), (hover: none) and (pointer: coarse)');
 
 if (canvas) {
   const gl = canvas.getContext('webgl2', { alpha: true, antialias: false, powerPreference: 'high-performance' });
@@ -15,6 +16,7 @@ if (canvas) {
       uniform float pixelRatio;
       uniform float time;
       uniform float variant;
+      uniform float compactMode;
       out vec4 outColor;
 
       float gridCss(vec2 cssPosition, float cellSize) {
@@ -30,20 +32,23 @@ if (canvas) {
 
         /*
          * Grid spacing is expressed in CSS pixels, not as N cells per axis.
-         * Resizing the viewport changes the number of visible cells, while one
-         * cell keeps the same logical size on X and Y.
+         * Compact mode keeps motion interesting with a slow translation while
+         * avoiding phase changes that make the whole field appear to breathe.
          */
         float cellSize = variant > 2.5 ? 84.0 : 64.0;
-        float g = gridCss(cssPosition + vec2(t * 18.0, 0.0), cellSize) * .055;
+        float gridSpeed = mix(1.0, .28, compactMode);
+        float g = gridCss(cssPosition + vec2(t * 18.0 * gridSpeed, 0.0), cellSize) * .055;
 
         float pointerDistance = distance(cssPosition, pointerCss);
         float glow = 32.0 / max(pointerDistance, 32.0);
-        float wave = sin((centered.x * 8.0 + centered.y * 5.0) + t * 3.0) * .5 + .5;
+        float wavePhase = compactMode > .5 ? 0.0 : t * 3.0;
+        float wave = sin((centered.x * 8.0 + centered.y * 5.0) + wavePhase) * .5 + .5;
         vec3 base = vec3(0.067, 0.067, 0.106);
         vec3 blue = vec3(0.537, 0.706, 0.980);
         vec3 mauve = vec3(0.796, 0.651, 0.969);
         vec3 tint = mix(blue, mauve, clamp(variant / 3.0 + wave * .12, 0.0, 1.0));
-        float energy = g + glow * (variant > 2.5 ? .055 : .025) + wave * (variant > 2.5 ? .018 : .007);
+        float pointerEnergy = glow * (variant > 2.5 ? .055 : .025) * (1.0 - compactMode);
+        float energy = g + pointerEnergy + wave * (variant > 2.5 ? .018 : .007);
         outColor = vec4(base + tint * energy, .76);
       }
     `;
@@ -83,6 +88,7 @@ if (canvas) {
         const pixelRatio = gl.getUniformLocation(program, 'pixelRatio');
         const time = gl.getUniformLocation(program, 'time');
         const variantUniform = gl.getUniformLocation(program, 'variant');
+        const compactMode = gl.getUniformLocation(program, 'compactMode');
         const variant = ({ a: 1, b: 2, c: 3 } as Record<string, number>)[document.body.dataset.design || 'a'] || 1;
 
         let cssWidth = 1;
@@ -141,6 +147,7 @@ if (canvas) {
           gl.uniform1f(pixelRatio, dpr);
           gl.uniform1f(time, reduceMotion ? 0 : now / 1000);
           gl.uniform1f(variantUniform, variant);
+          gl.uniform1f(compactMode, compactMotion.matches ? 1 : 0);
           gl.drawArrays(gl.TRIANGLES, 0, 3);
           if (!reduceMotion) requestAnimationFrame(render);
         };
