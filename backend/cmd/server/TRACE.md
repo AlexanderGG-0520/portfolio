@@ -18,4 +18,13 @@ trace --help
 - `--runtime` inspects the currently running Go process and the ownership boundary between the Astro build, runtime truth and deployment metadata.
 - `--state` contrasts this portfolio's stateless workload with the persistent-state boundary demonstrated by Minecartainer.
 
-The runtime-aware targets use the same `currentRuntimeSnapshot` source as `GET /api/runtime`; they do not scrape Kubernetes or expose arbitrary host/process environment data.
+## Authority boundaries
+
+`trace` is an inspection surface, not an independent source of truth.
+
+- Kubernetes desired state is defined by `.github/workflows/container.yml` and `k8s/**`.
+- Runtime identity comes from the same `currentRuntimeSnapshot` source as `GET /api/runtime`.
+- Static trace topology must follow the deployed architecture rather than carrying migration plans or future-tense deployment claims.
+- Runtime-aware targets do not scrape Kubernetes or expose arbitrary host/process environment data.
+
+Repository-wide ownership rules are documented in `docs/system-truth.md`.

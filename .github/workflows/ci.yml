@@ -22,6 +22,22 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify content authority boundaries
+        shell: bash
+        run: |
+          if grep -R -F 'Local today. Kubernetes later.' frontend/src backend/cmd/server; then
+            echo 'stale pre-Kubernetes deployment copy detected' >&2
+            exit 1
+          fi
+          if grep -R -F '今はlocal。次はKubernetes。' frontend/src backend/cmd/server; then
+            echo 'stale Japanese pre-Kubernetes deployment copy detected' >&2
+            exit 1
+          fi
+          if grep -R -F 'Target runtime:' frontend/src backend/cmd/server; then
+            echo 'runtime state must not be described as a future target' >&2
+            exit 1
+          fi
+
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm install
@@ -77,6 +93,8 @@ jobs:
           printf '%s' "$en_html" | grep -q 'Home Kubernetes Platform'
           printf '%s' "$en_html" | grep -q 'Operational evidence is not'
           printf '%s' "$en_html" | grep -q 'The browser asks.'
+          printf '%s' "$en_html" | grep -q 'Cloudflare Tunnel → ClusterIP Service'
+          printf '%s' "$en_html" | grep -q 'Kubernetes is the current runtime.'
           printf '%s' "$en_html" | grep -q '/ja/'
 
           ja_html="$(curl --fail --silent http://127.0.0.1:8080/ja/)"
@@ -92,6 +110,8 @@ jobs:
           printf '%s' "$ja_html" | grep -q '基盤ごと乗り換える'
           printf '%s' "$ja_html" | grep -q '運用の証拠はそうじゃない'
           printf '%s' "$ja_html" | grep -q 'ブラウザが問い'
+          printf '%s' "$ja_html" | grep -q 'Cloudflare Tunnel → ClusterIP Service'
+          printf '%s' "$ja_html" | grep -q 'Kubernetesが現在のruntime。'
           printf '%s' "$ja_html" | grep -q '/en/'
 
           curl --fail --silent http://127.0.0.1:8080/robots.txt | grep -q '^Allow: /$'
@@ -108,10 +128,13 @@ jobs:
           printf '%s' "$en_html" | grep -q 'data-view-mode-inspect'
           printf '%s' "$en_html" | grep -q 'data-inspect-detail'
 
-          curl --fail --silent \
+          fastfetch="$(curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"fastfetch"}' \
-            http://127.0.0.1:8080/api/terminal | grep -q 'Target runtime'
+            http://127.0.0.1:8080/api/terminal)"
+          printf '%s' "$fastfetch" | grep -q 'Environment:      ci'
+          printf '%s' "$fastfetch" | grep -q 'Orchestrator:     process'
+          printf '%s' "$fastfetch" | grep -q 'Instance:         github-actions'
           curl --fail --silent \
             -H 'Content-Type: application/json' \
             -d '{"command":"trace --system","cwd":"/"}' \

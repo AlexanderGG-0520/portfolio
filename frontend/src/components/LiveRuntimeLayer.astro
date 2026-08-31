@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '../i18n/locales';
+import { systemModel } from '../data/system-model';
 import '../styles/live-runtime.css';
 
 interface Props {
@@ -24,9 +25,9 @@ const c = ja
       publicLabel: 'PUBLIC BOUNDARY',
       publicTitle: '公開する情報は意図的に選ぶ。',
       publicBody: 'raw Kubernetes APIも、hostnameやenvironmentの自動dumpも公開しません。deployment metadataはopt-inで、長さと文字種をfilterしたものだけをpublicにします。',
-      deployLabel: 'DEPLOYMENT PATH',
-      deployTitle: '今はlocal。次はKubernetes。',
-      deployBody: 'API contractは変えません。将来は明示的なenvironment variableやDownward APIからrelease / workload identityを注入でき、frontend側の設計を変えずにproduction runtimeへ移行できます。',
+      deployLabel: 'DEPLOYMENT CONTEXT',
+      deployTitle: `${systemModel.platform.orchestrator}が現在のruntime。`,
+      deployBody: `Productionは${systemModel.deployment.workload}として稼働しています。Pod identityは${systemModel.deployment.instanceIdentity}から注入し、release identityは${systemModel.deployment.releaseIdentity}としてimageに固定します。上のreadoutが、このrequestを実際に返しているprocessについてのauthoritativeな情報です。`,
       principle: 'frontendはシステムを表示する。backendは、実際に動いているシステムのsource of truthを持つ。',
     }
   : {
@@ -44,9 +45,9 @@ const c = ja
       publicLabel: 'PUBLIC BOUNDARY',
       publicTitle: 'Expose only what is intentional.',
       publicBody: 'No raw Kubernetes API and no automatic hostname or environment dump. Deployment metadata is opt-in, length-limited and filtered before it becomes public.',
-      deployLabel: 'DEPLOYMENT PATH',
-      deployTitle: 'Local today. Kubernetes later.',
-      deployBody: 'The API contract stays the same. A future deployment can inject release and workload identity through explicit environment variables or the Downward API without changing the frontend.',
+      deployLabel: 'DEPLOYMENT CONTEXT',
+      deployTitle: `${systemModel.platform.orchestrator} is the current runtime.`,
+      deployBody: `Production runs as a ${systemModel.deployment.workload}. Pod identity is injected through the ${systemModel.deployment.instanceIdentity}, while release identity stays fixed in ${systemModel.deployment.releaseIdentity}. The readout above is authoritative for the process serving this request.`,
       principle: 'The frontend presents the system. The backend is the source of truth for the system that is actually running.',
     };
 ---
