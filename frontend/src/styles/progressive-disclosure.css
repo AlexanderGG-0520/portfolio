@@ -1,0 +1,128 @@
+/* Information density is progressive: skim is the default, inspect is opt-in. */
+html:not([data-view-mode="inspect"]) [data-inspect-detail] {
+  display: none !important;
+}
+
+html[data-view-mode="inspect"] [data-view-mode-inspect] {
+  display: none !important;
+}
+
+.view-mode-control {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  padding: 0;
+  color: var(--overlay-1);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: color 150ms var(--ease), transform 150ms var(--ease);
+}
+
+.view-mode-control i {
+  color: var(--surface-2);
+  font-style: normal;
+}
+
+.view-mode-control strong {
+  color: var(--blue);
+  font-weight: 550;
+}
+
+.view-mode-control:hover,
+.view-mode-control:focus-visible {
+  color: var(--text);
+  outline: none;
+  transform: translate3d(0, -1px, 0);
+}
+
+.density-expand {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 0;
+  padding: 13px 0;
+  border: 0;
+  border-top: 1px solid rgb(69 71 90 / .32);
+  border-bottom: 1px solid rgb(69 71 90 / .22);
+  color: var(--overlay-1);
+  background: transparent;
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  transition: color 150ms var(--ease), border-color 150ms var(--ease), background 150ms var(--ease);
+}
+
+.density-expand > span {
+  color: var(--blue);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.density-expand > strong {
+  color: var(--subtext-1);
+  font-size: .84rem;
+  font-weight: 500;
+}
+
+.density-expand > i {
+  color: var(--mauve);
+  font-style: normal;
+  font-size: .9rem;
+}
+
+.density-expand:hover,
+.density-expand:focus-visible {
+  color: var(--text);
+  border-color: rgb(137 180 250 / .52);
+  background: rgb(137 180 250 / .025);
+  outline: none;
+}
+
+.density-expand:hover > strong,
+.density-expand:focus-visible > strong {
+  color: var(--text);
+}
+
+/* Skim mode keeps the evidence headline, but reduces secondary prose density. */
+html:not([data-view-mode="inspect"]) .evidence-record-primary p,
+html:not([data-view-mode="inspect"]) .incident-copy p {
+  max-width: 78ch;
+}
+
+html:not([data-view-mode="inspect"]) .live-runtime-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  html:not([data-view-mode="inspect"]) .live-runtime-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .density-expand {
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+  }
+
+  .density-expand > strong {
+    font-size: .8rem;
+  }
+
+  html:not([data-view-mode="inspect"]) .live-runtime-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-mode-control,
+  .density-expand {
+    transition-duration: .01ms !important;
+  }
+}
