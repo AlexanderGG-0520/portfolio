@@ -41,12 +41,12 @@ func traceUsage() []string {
 		"usage: trace <target>",
 		"",
 		"targets:",
-		"  --system       complete system / responsibility boundaries",
-		"  --network      public web path from Cloudflare to the Go process",
-		"  --deployment   OCI image promotion and Kubernetes reconciliation",
-		"  --runtime      live Go process, release, routes, and ownership",
-		"  --state        stateless portfolio vs persistent workload boundary",
-		"  --help         show trace targets",
+		"  trace --system       complete system / responsibility boundaries",
+		"  trace --network      public web path from Cloudflare to the Go process",
+		"  trace --deployment   OCI image promotion and Kubernetes reconciliation",
+		"  trace --runtime      live Go process, release, routes, and ownership",
+		"  trace --state        stateless portfolio vs persistent workload boundary",
+		"  trace --help         show trace targets",
 	}
 }
 
@@ -56,7 +56,7 @@ func traceSystemLines() []string {
 		"",
 		"PUBLIC",
 		"Internet",
-		"├─ web        → Cloudflare Tunnel → portfolio Service → Go / Astro",
+		"├─ web        → Portfolio / Astro ↔ Go API  via Cloudflare Tunnel / ClusterIP Service",
 		"└─ minecraft  → mc-router → Minecraft workloads",
 		"                             └─ Minecartainer / stateful runtime",
 		"",
