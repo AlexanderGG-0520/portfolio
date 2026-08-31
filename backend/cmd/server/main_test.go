@@ -34,17 +34,17 @@ func TestProfile(t *testing.T) {
 }
 
 func TestRunTerminalCommandFastfetch(t *testing.T) {
-	response := runTerminalCommand("fastfetch")
+	response := runTerminalCommand("fastfetch", "/")
 	if response.ExitCode != 0 {
 		t.Fatalf("expected exit code 0, got %d", response.ExitCode)
 	}
-	if len(response.Lines) < 5 {
-		t.Fatalf("expected fastfetch output, got %v", response.Lines)
+	if len(response.Lines) < 5 || !strings.Contains(strings.Join(response.Lines, "\n"), "fish-inspired") {
+		t.Fatalf("expected fish-like fastfetch output, got %v", response.Lines)
 	}
 }
 
 func TestRunTerminalCommandUnknownFailsClosed(t *testing.T) {
-	response := runTerminalCommand("rm -rf /")
+	response := runTerminalCommand("rm -rf /", "/")
 	if response.ExitCode != 127 {
 		t.Fatalf("expected unknown command exit code 127, got %d", response.ExitCode)
 	}
@@ -54,14 +54,38 @@ func TestRunTerminalCommandUnknownFailsClosed(t *testing.T) {
 }
 
 func TestRunTerminalCommandClear(t *testing.T) {
-	response := runTerminalCommand("clear")
+	response := runTerminalCommand("clear", "/")
 	if !response.Clear {
 		t.Fatal("expected clear response")
 	}
 }
 
-func TestTerminalEndpoint(t *testing.T) {
-	req := httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader("{\"command\":\"projects\"}"))
+func TestVirtualFilesystemNavigation(t *testing.T) {
+	cd := runTerminalCommand("cd projects", "/")
+	if cd.ExitCode != 0 || cd.CWD != "/projects" {
+		t.Fatalf("cd response = %#v", cd)
+	}
+
+	listing := runTerminalCommand("ls", cd.CWD)
+	if len(listing.Entries) < 2 || listing.Entries[0].Kind != "dir" {
+		t.Fatalf("unexpected project listing: %#v", listing.Entries)
+	}
+
+	readme := runTerminalCommand("cat minecartainer/README.md", cd.CWD)
+	if readme.ExitCode != 0 || !strings.Contains(strings.Join(readme.Lines, "\n"), "Treat the container as disposable") {
+		t.Fatalf("unexpected README output: %#v", readme)
+	}
+}
+
+func TestVirtualFilesystemCannotEscapeRoot(t *testing.T) {
+	response := runTerminalCommand("cd ../../../../", "/projects")
+	if response.ExitCode != 0 || response.CWD != "/" {
+		t.Fatalf("expected traversal to clamp to virtual root, got %#v", response)
+	}
+}
+
+func TestTerminalEndpointCarriesCWD(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader(`{"command":"pwd","cwd":"/projects"}`))
 	req.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
 	newHandler(t.TempDir()).ServeHTTP(recorder, req)
@@ -69,7 +93,8 @@ func TestTerminalEndpoint(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d; body = %s", recorder.Code, http.StatusOK, recorder.Body.String())
 	}
-	if body := recorder.Body.String(); !strings.Contains(body, "Minecartainer") || !strings.Contains(body, `"exitCode":0`) {
-		t.Fatalf("terminal response missing expected output: %s", body)
+	body := recorder.Body.String()
+	if !strings.Contains(body, `"cwd":"/projects"`) || !strings.Contains(body, "~/portfolio/projects") {
+		t.Fatalf("terminal response missing cwd: %s", body)
 	}
 }
