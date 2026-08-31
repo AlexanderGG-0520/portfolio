@@ -61,7 +61,7 @@ Bootstrap once from a cluster that already has Argo CD installed in the `argocd`
 kubectl apply -f k8s/argocd/application.yaml
 ```
 
-The Application watches `main` at `k8s/overlays/production` and uses automated prune + self-heal. Application code promotion still happens by changing the immutable image digest in Git; Argo CD does not follow mutable image tags.
+The Application watches `main` at `k8s/overlays/production` and uses automated prune + self-heal. Argo CD remains the only component that mutates the cluster for application deployment; GitHub Actions only changes Git desired state.
 
 ## Cloudflare Tunnel
 
@@ -105,6 +105,36 @@ The Deployment uses startup, readiness and liveness probes against `/api/health`
 
 The manifest intentionally contains no registry credentials. `ghcr.io/alexandergg-0520/portfolio` must either be publicly pullable or the target cluster must provide an `imagePullSecret` through its own secret-management path. Do not commit a PAT or generated Docker config to this repository.
 
-## Updating the production image
+## Automatic production promotion
 
-Production stays immutable. After a new image is published, update the `digest` in `k8s/overlays/production/kustomization.yaml` and commit that change. Argo CD can then reconcile an explicit image promotion instead of following mutable `latest` or `main` tags.
+A merge to `main` now drives the complete deployment chain:
+
+```text
+main source commit
+  ↓
+GitHub Actions / Container
+  ↓
+build + push immutable OCI image
+  ↓
+resolve pushed sha256 digest
+  ↓
+rewrite production Kustomize digest
+  ↓
+render and verify production manifest
+  ↓
+chore(deploy): promote <source-sha> [skip ci]
+  ↓
+main Git desired state
+  ↓
+Argo CD
+  ↓
+Kubernetes rollout
+```
+
+The `publish` job returns the digest produced by `docker/build-push-action`. The `promote` job runs only for a push to `main`, checks out the latest `main`, replaces exactly one production `digest:` field, validates its format, renders the overlay with `kubectl kustomize`, and commits the result back to Git.
+
+Production therefore remains immutable without requiring a human to copy a digest after every image publish. Git is still the deployment source of truth: GitHub Actions does **not** call `kubectl set image`, the Kubernetes API, or Argo CD directly.
+
+Promotion commits only change `k8s/overlays/production/kustomization.yaml`. The Container workflow ignores `k8s/**`-only pushes, and promotion commits include `[skip ci]`, so a promotion does not recursively build and publish another image. Workflow concurrency also cancels an older in-progress run when a newer commit reaches the same ref, reducing the risk of a stale image being promoted after a newer one.
+
+Tag builds and manual workflow dispatches still publish OCI images, but they do not automatically promote production. Production follows successful source pushes to `main`.
