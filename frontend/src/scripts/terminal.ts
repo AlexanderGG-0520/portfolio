@@ -72,6 +72,7 @@ const history: string[] = [];
 let historyIndex = 0;
 let cwd = '/';
 let suggestion = '';
+let lastFocused: HTMLElement | null = null;
 
 function displayPath(value: string) {
   return value === '/' ? '~/portfolio' : `~/portfolio${value}`;
@@ -90,17 +91,42 @@ function scrollToPrompt() {
   });
 }
 
-function setOpen(open: boolean) {
+function terminalFocusableItems() {
+  if (!terminal) return [];
+  return Array.from(terminal.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+    .filter((item) => item.tabIndex !== -1 && !item.closest('[inert]'));
+}
+
+function fallbackOpener() {
+  return Array.from(openers).find((opener) => opener.offsetParent !== null && !opener.closest('[inert]')) ?? null;
+}
+
+function restoreTerminalFocus() {
+  const target = lastFocused?.isConnected && !lastFocused.closest('[inert]')
+    ? lastFocused
+    : fallbackOpener();
+  requestAnimationFrame(() => target?.focus());
+}
+
+function setOpen(open: boolean, restoreFocus = true) {
   if (!terminal) return;
+
+  if (open && terminal.dataset.open !== 'true') {
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : fallbackOpener();
+  }
+
   terminal.dataset.open = open ? 'true' : 'false';
   terminal.setAttribute('aria-hidden', open ? 'false' : 'true');
   terminal.toggleAttribute('inert', !open);
   document.documentElement.dataset.terminal = open ? 'open' : 'closed';
+
   if (open) {
     requestAnimationFrame(() => {
       input?.focus();
       scrollToPrompt();
     });
+  } else if (restoreFocus) {
+    restoreTerminalFocus();
   }
 }
 
@@ -275,18 +301,41 @@ terminal?.addEventListener('click', (event) => {
   if (event.target === terminal) setOpen(false);
 });
 
+screen?.addEventListener('click', () => {
+  if (window.getSelection()?.isCollapsed !== false) input?.focus();
+});
+
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && terminal?.dataset.open === 'true') {
+  const isOpen = terminal?.dataset.open === 'true';
+
+  if (isOpen && event.key === 'Escape') {
     event.preventDefault();
     setOpen(false);
     return;
+  }
+
+  if (isOpen && event.key === 'Tab') {
+    const items = terminalFocusableItems();
+    if (items.length) {
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   }
 
   if (event.key === '`' && !event.ctrlKey && !event.metaKey && !event.altKey) {
     const target = event.target as HTMLElement | null;
     if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return;
     event.preventDefault();
-    setOpen(terminal?.dataset.open !== 'true');
+    setOpen(!isOpen);
   }
 });
 
