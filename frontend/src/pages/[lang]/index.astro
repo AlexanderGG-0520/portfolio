@@ -4,6 +4,7 @@ import TerminalPanel from '../../components/TerminalPanel.astro';
 import ArchitectureLayer from '../../components/ArchitectureLayer.astro';
 import CaseStudiesLayer from '../../components/CaseStudiesLayer.astro';
 import EvidenceOperationLayer from '../../components/EvidenceOperationLayer.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
 import { supportedLocales, type Locale } from '../../i18n/locales';
 import '../../styles/home.css';
 import '../../styles/terminal.css';
@@ -106,5 +107,6 @@ const { lang } = Astro.props;
     <EvidenceOperationLayer />
   </main>
 
+  <SiteFooter />
   <TerminalPanel />
 </BaseLayout>
