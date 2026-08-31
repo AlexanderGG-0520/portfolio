@@ -1,0 +1,86 @@
+/*
+ * Readability floor for the production portfolio.
+ * The visual language stays terminal-inspired, but meaningful labels should
+ * not require terminal-sized eyesight to read.
+ */
+
+:root {
+  --type-micro: clamp(.74rem, .22vw + .69rem, .82rem);
+  --type-small: clamp(.8rem, .24vw + .75rem, .9rem);
+}
+
+/* Header / hero */
+body .home-nav { font-size: var(--type-small); }
+body .home-runtime { font-size: var(--type-micro); }
+body .terminal-link { font-size: var(--type-small); }
+body .object-kind,
+body .object-detail { font-size: var(--type-micro); }
+body .field-readout,
+body .home-footnote,
+body .next-layer > span { font-size: var(--type-micro); }
+
+/* Architecture */
+body .architecture-index { font-size: .78rem; }
+body .architecture-label { font-size: var(--type-micro); }
+body .architecture-origin small,
+body .architecture-lane small,
+body .platform-title small,
+body .architecture-nodes small,
+body .architecture-proxmox small,
+body .workload-note small { font-size: var(--type-micro); }
+body .platform-services > span { font-size: var(--type-small); }
+body .platform-services small { font-size: var(--type-micro); }
+body .architecture-next { font-size: var(--type-micro); }
+
+/* Case studies */
+body .case-index-label,
+body .case-study-kind,
+body .case-study-question > span,
+body .case-study-details section > span,
+body .case-invariant > span,
+body .case-proof > span { font-size: .76rem; }
+body .case-index a > span { font-size: var(--type-micro); }
+body .case-index a > small { font-size: var(--type-micro); }
+body .case-source { font-size: var(--type-micro); }
+body .case-studies-next { font-size: var(--type-micro); }
+
+/* Evidence / operation */
+body .evidence-index,
+body .evidence-kind { font-size: .76rem; }
+body .evidence-trace { font-size: var(--type-micro); }
+body .record-type,
+body .incident-meta span,
+body .incident-state,
+body .incident-black-case > span,
+body .runtime-topology span,
+body .operation-ledger span,
+body .evidence-principle > span,
+body .evidence-next { font-size: var(--type-micro); }
+body .evidence-record > code { font-size: var(--type-small); }
+body .evidence-record small,
+body .incident-meta time,
+body .incident-copy a,
+body .runtime-topology small,
+body .runtime-services i { font-size: var(--type-micro); }
+body .incident-black-case p { font-size: var(--type-small); }
+
+/* Mini terminal */
+body .terminal-drawer .terminal-bar { font-size: .76rem; }
+body .terminal-drawer .terminal-message,
+body .terminal-input-line { font-size: clamp(.84rem, .94vw, .94rem); }
+
+/* Footer */
+body .footer-trace,
+body .footer-kicker,
+body .footer-nav > span,
+body .footer-actions > span,
+body .footer-bottom { font-size: var(--type-micro); }
+
+@media (max-width: 680px) {
+  :root {
+    --type-micro: .76rem;
+    --type-small: .84rem;
+  }
+
+  body .home-runtime { font-size: .74rem; }
+}
