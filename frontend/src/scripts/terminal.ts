@@ -19,6 +19,7 @@ function setOpen(open: boolean) {
   if (!terminal) return;
   terminal.dataset.open = open ? 'true' : 'false';
   terminal.setAttribute('aria-hidden', open ? 'false' : 'true');
+  terminal.toggleAttribute('inert', !open);
   document.documentElement.dataset.terminal = open ? 'open' : 'closed';
   if (open) requestAnimationFrame(() => input?.focus());
 }
@@ -36,7 +37,7 @@ function appendPrompt(command: string) {
 }
 
 function appendLines(lines: string[], exitCode = 0) {
-  if (!output) return;
+  if (!output || lines.length === 0) return;
   const block = document.createElement('pre');
   block.className = exitCode === 0 ? 'terminal-message terminal-response' : 'terminal-message terminal-error';
   block.textContent = lines.join('\n');
