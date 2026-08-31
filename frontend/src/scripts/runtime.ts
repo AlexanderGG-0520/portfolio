@@ -1,3 +1,5 @@
+import './viewport-debug.ts';
+
 const setText = (selector: string, value: string) => {
   document.querySelectorAll<HTMLElement>(selector).forEach((node) => {
     node.textContent = value;
