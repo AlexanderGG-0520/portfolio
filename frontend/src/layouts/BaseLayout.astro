@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  design?: 'a' | 'b' | 'c' | 'index';
+}
+
+const { title, design = 'index' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#11111b" />
+    <meta name="description" content="Alec — Backend, Infrastructure and Systems Engineering portfolio." />
+    <title>{title}</title>
+  </head>
+  <body data-design={design}>
+    <canvas id="gpu-background" class="gpu-background" aria-hidden="true"></canvas>
+    <div class="pointer-glow" aria-hidden="true"></div>
+    <slot />
+    <script>
+      import '../scripts/gpu-background.ts';
+      import '../scripts/runtime.ts';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+---
+interface Props {
+  variant: 'a' | 'b' | 'c';
+}
+const { variant } = Astro.props;
+const variants = {
+  a: { name: 'Focus Pane', note: 'Whitespace / typography / restrained terminal chrome' },
+  b: { name: 'Tiled Systems', note: 'Hyprland-like workspace / architecture visible immediately' },
+  c: { name: 'Signal Field', note: 'GPU atmosphere / network flow / strongest visual identity' },
+};
+const current = variants[variant];
+---
+
+<header class="site-header shell">
+  <a class="brand" href="/">alec<span>@portfolio</span></a>
+  <nav class="variant-switcher" aria-label="Design prototypes">
+    {(['a', 'b', 'c'] as const).map((id) => (
+      <a href={`/design/${id}/`} class:list={[{ active: id === variant }]} aria-current={id === variant ? 'page' : undefined}>
+        {id.toUpperCase()}
+      </a>
+    ))}
+  </nav>
+  <div class="api-pill"><span class="status-dot"></span><span data-api-status>connecting</span></div>
+</header>
+
+<main class:list={['prototype', `prototype-${variant}`]}>
+  {variant === 'a' && (
+    <section class="hero hero-a shell">
+      <div class="focus-window glass-panel">
+        <div class="window-bar">
+          <div><span class="dot red"></span><span class="dot peach"></span><span class="dot green"></span></div>
+          <span>~/portfolio</span>
+          <span class="window-state">DESIGN A</span>
+        </div>
+        <div class="focus-content">
+          <p class="prompt"><span>alec@portfolio</span>:~$ whoami</p>
+          <p class="eyebrow" data-profile-role>Backend / Infrastructure / Systems Engineering</p>
+          <h1>Software should be designed<br />through the infrastructure<br />that actually runs it.</h1>
+          <p class="lede" data-profile-thesis>I build software as complete systems, through the infrastructure that runs them.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#system">Explore the system</a>
+            <a class="button ghost" href="https://github.com/AlexanderGG-0520">GitHub ↗</a>
+          </div>
+        </div>
+        <div class="status-strip">
+          <span><b>runtime</b> Kubernetes</span>
+          <span><b>edge</b> mc-router</span>
+          <span><b>stateful</b> Minecartainer</span>
+          <span><b>backend</b> <i data-api-status>connecting</i></span>
+        </div>
+      </div>
+      <p class="prototype-note"><b>A / {current.name}</b> — {current.note}</p>
+    </section>
+  )}
+
+  {variant === 'b' && (
+    <section class="hero hero-b shell">
+      <div class="tile tile-copy glass-panel">
+        <div class="tile-label">01 / IDENTITY</div>
+        <p class="prompt"><span>alec@portfolio</span>:~$ systemctl status me</p>
+        <h1>I build software<br />as an operating system.</h1>
+        <p class="lede" data-profile-thesis>I build software as complete systems, through the infrastructure that runs them.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#system">Open case studies</a>
+          <a class="button ghost" href="https://github.com/AlexanderGG-0520">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="tile tile-system glass-panel" id="system">
+        <div class="tile-label">02 / LIVE SYSTEM</div>
+        <div class="system-map">
+          <div class="system-node internet"><small>PUBLIC EDGE</small><strong>Internet</strong></div>
+          <div class="connector c1"></div>
+          <div class="system-node router"><small>NETWORK</small><strong>mc-router</strong><em>protocol-aware edge</em></div>
+          <div class="connector c2"></div>
+          <div class="system-node kube"><small>PLATFORM</small><strong>Kubernetes</strong><em>reconciliation / storage / network</em></div>
+          <div class="connector c3"></div>
+          <div class="system-node mine"><small>RUNTIME</small><strong>Minecartainer</strong><em>stateful workload lifecycle</em></div>
+        </div>
+      </div>
+      <div class="tile tile-status glass-panel">
+        <span class="tile-label">03 / OBSERVABILITY</span>
+        <div class="metric"><b>backend</b><span class="healthy"><span class="status-dot"></span><span data-api-status>connecting</span></span></div>
+        <div class="metric"><b>delivery</b><span>GitHub → build → runtime</span></div>
+        <div class="metric"><b>scope</b><span>backend / infra / systems</span></div>
+      </div>
+      <p class="prototype-note"><b>B / {current.name}</b> — {current.note}</p>
+    </section>
+  )}
+
+  {variant === 'c' && (
+    <section class="hero hero-c shell">
+      <div class="signal-topline">
+        <span class="prompt"><span>alec@portfolio</span>:~$ trace --system</span>
+        <span class="mono-chip"><span class="status-dot"></span><span data-api-status>connecting</span></span>
+      </div>
+      <div class="signal-copy">
+        <p class="eyebrow" data-profile-role>Backend / Infrastructure / Systems Engineering</p>
+        <h1>From code<br />to running system.</h1>
+        <p class="lede" data-profile-thesis>I build software as complete systems, through the infrastructure that runs them.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#signal-system">Trace the architecture</a>
+          <a class="button ghost" href="https://github.com/AlexanderGG-0520">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="signal-orbit" id="signal-system" aria-label="System layers">
+        <div class="orbit-line line-one"></div>
+        <div class="orbit-line line-two"></div>
+        <div class="signal-node n1"><small>EDGE</small><strong>mc-router</strong></div>
+        <div class="signal-node n2"><small>PLATFORM</small><strong>Kubernetes</strong></div>
+        <div class="signal-node n3"><small>STATEFUL RUNTIME</small><strong>Minecartainer</strong></div>
+        <div class="signal-node n4"><small>THIS SITE</small><strong>Portfolio API</strong></div>
+      </div>
+      <div class="floating-readout r1">TCP / Java handshake</div>
+      <div class="floating-readout r2">desired → ready</div>
+      <div class="floating-readout r3">PVC / persistent state</div>
+      <p class="prototype-note"><b>C / {current.name}</b> — {current.note}</p>
+    </section>
+  )}
+</main>
