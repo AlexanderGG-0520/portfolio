@@ -62,12 +62,14 @@ func TestRunTerminalCommandClear(t *testing.T) {
 
 func TestTerminalEndpoint(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader(`{"command":"projects"}`))
+	req.Body = http.NoBody
+	req = httptest.NewRequest(http.MethodPost, "/api/terminal", strings.NewReader("{\"command\":\"projects\"}"))
 	req.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
 	newHandler(t.TempDir()).ServeHTTP(recorder, req)
 
 	if recorder.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+		t.Fatalf("status = %d, want %d; body = %s", recorder.Code, http.StatusOK, recorder.Body.String())
 	}
 	if body := recorder.Body.String(); !strings.Contains(body, "Minecartainer") || !strings.Contains(body, `"exitCode":0`) {
 		t.Fatalf("terminal response missing expected output: %s", body)
