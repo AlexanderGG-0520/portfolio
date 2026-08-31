@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -123,5 +122,4 @@ func envOr(key, fallback string) string {
 
 func init() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})))
-	_ = fmt.Sprintf("")
 }
