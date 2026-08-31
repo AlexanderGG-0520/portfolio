@@ -119,8 +119,14 @@ function completionCandidates(value: string) {
   const currentEntries = entriesByCWD[cwd] ?? [];
 
   if (name === 'trace') {
-    return ['trace --system', 'trace --help']
-      .filter((candidate) => candidate.toLowerCase().startsWith(trimmedStart.toLowerCase()));
+    return [
+      'trace --system',
+      'trace --network',
+      'trace --deployment',
+      'trace --runtime',
+      'trace --state',
+      'trace --help',
+    ].filter((candidate) => candidate.toLowerCase().startsWith(trimmedStart.toLowerCase()));
   }
 
   if (name === 'cd') {
