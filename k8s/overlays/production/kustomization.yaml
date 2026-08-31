@@ -4,7 +4,7 @@ resources:
   - ../../base
 images:
   - name: ghcr.io/alexandergg-0520/portfolio
-    digest: sha256:cc8dbcff71123d89a3d91139c853db0fd29221242e1e4cdffe995bd3f20afebc
+    digest: sha256:e09cb4db8f4aaa2b43ff3bca917956caa90b380af58b72c942d800c693fd1599
 patches:
   - target:
       group: apps
