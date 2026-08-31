@@ -1,0 +1,264 @@
+/* Final interaction and readability pass.
+ * Keep component identity, but make focus, active feedback, reading rhythm and modal behavior consistent.
+ */
+
+:root {
+  --focus-ring: rgb(137 180 250 / .82);
+  --focus-ring-soft: rgb(137 180 250 / .16);
+  --interaction-surface: rgb(137 180 250 / .055);
+}
+
+::selection {
+  color: var(--text);
+  background: rgb(137 180 250 / .28);
+}
+
+html {
+  scroll-padding-top: 88px;
+}
+
+html[data-terminal="open"],
+html[data-mobile-nav="open"] {
+  overflow: hidden;
+}
+
+html[data-terminal="open"] body,
+html[data-mobile-nav="open"] body {
+  overflow: hidden;
+}
+
+/* Keep large headings composed, then keep long technical prose within a repeatable measure. */
+.home-copy h1,
+.architecture-heading h2,
+.case-studies-heading h2,
+.case-study-header h3,
+.evidence-heading h2,
+.evidence-system-header h3,
+.live-runtime-heading h2 {
+  text-wrap: balance;
+}
+
+.architecture-heading > p,
+.case-studies-heading > p,
+.evidence-heading > p,
+.live-runtime-heading > p,
+.case-study-summary,
+.case-study-question p,
+.case-study-details p,
+.evidence-record p,
+.evidence-system-header > p,
+.incident-copy p,
+.operation-ledger p,
+.live-runtime-boundaries p {
+  text-wrap: pretty;
+}
+
+.case-study-details p,
+.evidence-record p,
+.incident-copy p,
+.operation-ledger p,
+.live-runtime-boundaries p {
+  max-width: 68ch;
+}
+
+/* Desktop navigation gets a real hit target without becoming a toolbar of pills. */
+.home-nav a,
+.home-nav button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* One keyboard-focus language across every interactive surface. */
+.home-brand:focus-visible,
+.home-nav a:focus-visible,
+.home-nav button:focus-visible,
+.home-actions .terminal-link:focus-visible,
+.architecture-next:focus-visible,
+.case-index a:focus-visible,
+.case-source:focus-visible,
+.case-studies-next:focus-visible,
+.evidence-record:focus-visible,
+.incident-copy a:focus-visible,
+.evidence-next:focus-visible,
+.view-mode-control:focus-visible,
+.density-expand:focus-visible,
+.mobile-nav-trigger:focus-visible,
+.mobile-nav-bar button:focus-visible,
+.mobile-nav-links > a:focus-visible,
+.mobile-nav-links > button:focus-visible,
+.terminal-drawer .terminal-bar button:focus-visible,
+.site-footer a:focus-visible,
+.site-footer button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 4px var(--focus-ring-soft);
+}
+
+/* Full-width mobile rows live inside an overflow container, so keep their ring visible inside it. */
+.mobile-nav-links > a:focus-visible,
+.mobile-nav-links > button:focus-visible {
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 1px var(--focus-ring-soft);
+}
+
+/* Avoid a second inset focus treatment on evidence cards. */
+.evidence-record:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Press feedback should feel like the inverse of hover lift. */
+.home-nav a:active,
+.home-nav button:active,
+.home-actions .terminal-link:active,
+.view-mode-control:active,
+.density-expand:active,
+.mobile-nav-trigger:active,
+.mobile-nav-links > a:active,
+.mobile-nav-links > button:active,
+.case-index a:active,
+.case-source:active,
+.evidence-record:active {
+  transform: translate3d(0, 0, 0) scale(.985);
+}
+
+/* Keep inspect affordances calm but unmistakably interactive. */
+.view-mode-control,
+.density-expand {
+  border-radius: 5px;
+}
+
+.view-mode-control {
+  min-height: 32px;
+  padding-inline: 5px;
+}
+
+.density-expand {
+  padding-inline: 8px;
+}
+
+.view-mode-control:hover,
+.view-mode-control:focus-visible,
+.density-expand:hover,
+.density-expand:focus-visible {
+  background-color: var(--interaction-surface);
+}
+
+.view-mode-control[aria-pressed="true"],
+.mobile-nav-links > button[data-view-mode-toggle][aria-pressed="true"] {
+  color: var(--text);
+  background: rgb(203 166 247 / .07);
+}
+
+.view-mode-control[aria-pressed="true"] strong,
+.mobile-nav-links > button[data-view-mode-toggle][aria-pressed="true"] strong {
+  color: var(--mauve);
+}
+
+/* Terminal behaves like the modal dialog it semantically is. */
+.terminal-drawer .terminal-frame {
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.mobile-nav-backdrop {
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
+.terminal-drawer .terminal-bar button {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.terminal-input-line {
+  margin-inline: -6px;
+  padding-inline: 6px;
+  border-radius: 5px;
+  transition: background 150ms var(--ease), box-shadow 150ms var(--ease);
+}
+
+.terminal-input-line:focus-within {
+  background: rgb(137 180 250 / .035);
+  box-shadow: 0 0 0 1px rgb(137 180 250 / .34);
+}
+
+/* Firefox renders the existing aggressive negative tracking visibly tighter,
+ * especially with Noto Sans CJK JP. Preserve the hierarchy but reduce compression
+ * only in Gecko instead of changing the typography for every browser.
+ */
+@supports (-moz-appearance: none) {
+  .home-copy h1 {
+    letter-spacing: -.045em;
+  }
+
+  .architecture-heading h2,
+  .case-studies-heading h2,
+  .case-study-header h3,
+  .evidence-heading h2,
+  .evidence-system-header h3,
+  .live-runtime-heading h2 {
+    letter-spacing: -.04em;
+  }
+
+  html[lang="ja"] .home-copy h1 {
+    letter-spacing: -.025em;
+  }
+
+  html[lang="ja"] .architecture-heading h2,
+  html[lang="ja"] .case-studies-heading h2,
+  html[lang="ja"] .case-study-header h3,
+  html[lang="ja"] .evidence-heading h2,
+  html[lang="ja"] .evidence-system-header h3,
+  html[lang="ja"] .live-runtime-heading h2 {
+    letter-spacing: -.02em;
+  }
+}
+
+@media (max-width: 680px) {
+  html {
+    scroll-padding-top: 72px;
+  }
+
+  .architecture-heading > p,
+  .case-studies-heading > p,
+  .evidence-heading > p,
+  .live-runtime-heading > p {
+    max-width: 100%;
+  }
+
+  .view-mode-control {
+    min-height: 36px;
+  }
+
+  .density-expand {
+    min-height: 48px;
+    padding-inline: 6px;
+  }
+}
+
+@media (hover: none) {
+  .home-nav a:hover,
+  .home-nav button:hover,
+  .home-actions .terminal-link:hover,
+  .case-index a:hover,
+  .case-source:hover,
+  .evidence-record:hover,
+  .mobile-nav-trigger:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
