@@ -1,233 +1,160 @@
 ---
+import type { Locale } from '../i18n/locales';
 import '../styles/evidence-operation.css';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ja = lang === 'ja';
+
+const c = ja
+  ? {
+      index: '03 / evidence & operation',
+      title1: '設計を語るのは簡単。',
+      title2: '運用の証拠はそうじゃない。',
+      intro: '前のCase Studyで説明した設計を、実際のrepository artifact、regression history、そして今も運用しているruntime topologyへ接続します。実装detailを全部並べるのではなく、設計原則がどこで強制可能な形になるかを示します。',
+      flow: ['主張', '実装', '失敗', '運用'],
+      inspect: 'inspect',
+      inspectDetail: '追加の実装record / regression case / 運用note',
+      mineHeader: '永続stateの安全性は、state record・明示的なtransition・拒否を期待するtestとして残っています。',
+      markerStrong: 'managed stateを置き換える前に、configuration driftでfailする。',
+      markerBody: 'markerには artifact / type / version / build を記録します。有効なmarkerと要求設定が一致しなければdefaultでfailし、FORCE_REINSTALL=trueもoperatorの明示的な意思として扱います。それでもworld、mods、plugins、configurationは削除しません。',
+      lifecycleStrong: 'installは毎回のbootの副作用ではなく、明示的なphase。',
+      lifecycleBody: 'server artifact、world、mods、datapack、config、pluginは、runtimeへ移る前に名前の付いたinstall pipelineとpre/post boundaryを通ります。',
+      regressionStrong: 'failure pathを実行可能な仕様としてtestする。',
+      regressionBody: 'runtime CIはinstall-only、RCON safety、managed marker mismatch、bring-your-own artifact、ownership-sensitiveなmodpack挙動など、lifecycle regressionを実際に実行します。',
+      operationStrong: 'worldはPodより長く生きる。',
+      operationBody: '運用patternではpersistent storage、保守的なreplacement、readiness、Minecraft-awareなbounded shutdownを使い、JVMと永続stateを同じ寿命として扱いません。',
+      routerHeader: '一番強い証拠はfeature listではなく、architectureそのものを変えたproduction regressionです。',
+      incidentState: 'STATUS ROUTING REGRESSION → RESPONSIBILITY BOUNDARY',
+      incidentTitle: 'Java routing semanticsとobservabilityを復旧。',
+      incidentBody: 'router所有のmonitoring stateがMinecraft STATUSの挙動へ影響し始めていました。復旧では statusOverride → statusBackend → backend の明示的precedenceを戻し、LOGIN / Transferはnormal backendのまま維持し、monitoring stateをSTATUS response controlから外しました。',
+      openCommit: 'recovery commitを開く ↗',
+      blackCaseAria: 'Regression black case',
+      protocolStrong: 'routingに必要な分だけparseする。',
+      protocolBody: '通常のJava trafficでは最初のhandshakeからhost identityとnext stateだけを読み、元のbytesを転送した後はgameplay trafficを解釈しません。',
+      routeStrong: 'Kubernetes discoveryはrouteを供給するが、routing semanticsを再定義しない。',
+      routeBody: 'static YAMLとdiscovered Serviceは同じroute modelへ合流するため、network coreをcluster control planeから独立してtestできます。',
+      controlStrong: 'optionalなcontrol integrationを暗黙のroute truthにしない。',
+      controlBody: 'scaler hook、availability observation、Hub notificationはcontrol-plane情報を扱えますが、選択backendを黙って変更するauthorityにはなりません。',
+      platformHeader: 'ここにはpublic repositoryではなく、制約を明示した実clusterと再構築可能なlayerそのものが運用上の証拠としてあります。',
+      hostConstraint: '現在の制約 / HAではない',
+      vmLifecycle: 'VM lifecycle boundary',
+      cp: 'cluster control / etcd',
+      worker: 'application workloads',
+      rebuildStrong: '教わりながらのinstallから、自力で再現できる手順へ。',
+      rebuildBody: '自分で壊して再構築でき、他のoperator向けに導入手順を書けるようになった時点で、platformは一度きりのlabではなくなりました。reproducibility自体をplatform definitionの一部にしています。',
+      realStrong: 'Minecraftとweb applicationを同じ運用modelで扱う。',
+      realBody: 'stateful game serverと通常のweb serviceを同じclusterでreconcileしつつ、storage・network・shutdownの要件はworkload boundaryごとに明示します。',
+      limitationStrong: '論理分離は物理availabilityではない。',
+      limitationBody: 'cp-01とworker-01は別VMですが、failure domainは同じ1台の物理hostです。現在をHA clusterのように見せず、そのまま物理node追加へ拡張できるtopologyにしています。',
+      proves: 'WHAT THIS LAYER PROVES',
+      provesBody: 'これらのprojectは後から描いたarchitecture diagramだけではありません。設計invariantが、永続state、実行可能なfailure case、recovery commit、そして今も維持しているinfrastructureとして残っています。',
+      next: '04 / live runtime',
+      nextDetail: '次はこのPortfolio自身のrunning processを証拠にする',
+    }
+  : {
+      index: '03 / evidence & operation',
+      title1: 'Design claims are cheap.',
+      title2: 'Operational evidence is not.',
+      intro: 'This layer ties the previous case studies to concrete repository artifacts, regression history and the runtime topology I actually operate. The goal is not to dump implementation details; it is to show where each design principle becomes enforceable.',
+      flow: ['claim', 'implementation', 'failure', 'operation'],
+      inspect: 'inspect',
+      inspectDetail: 'secondary implementation records / regression cases / operational notes',
+      mineHeader: 'Persistent-state safety is represented by state records, explicit transitions and tests that expect refusal.',
+      markerStrong: 'Configuration drift fails before managed state is replaced.',
+      markerBody: 'The marker records artifact, type, version and build. A valid mismatch fails by default; FORCE_REINSTALL=true is an explicit operator decision and still does not delete worlds, mods, plugins or configuration.',
+      lifecycleStrong: 'Installation is an explicit phase, not an accidental side effect of every boot.',
+      lifecycleBody: 'Server artifacts, worlds, mods, datapacks, configs and plugins pass through a named install pipeline with pre/post boundaries before the runtime takes over.',
+      regressionStrong: 'Failure paths are executable specifications.',
+      regressionBody: 'Runtime CI exercises lifecycle regressions such as install-only behavior, RCON safety, managed marker mismatches, bring-your-own artifacts and ownership-sensitive modpack behavior.',
+      operationStrong: 'The world outlives the Pod.',
+      operationBody: 'Maintained deployment patterns use persistent storage, conservative replacement, readiness and a bounded Minecraft-aware shutdown path instead of treating the JVM as disposable state.',
+      routerHeader: 'The strongest evidence is not a feature list. It is a production regression that changed the architecture.',
+      incidentState: 'STATUS ROUTING REGRESSION → RESPONSIBILITY BOUNDARY',
+      incidentTitle: 'Restore Java routing semantics and observability.',
+      incidentBody: 'Router-owned monitoring state had started influencing Minecraft STATUS behavior. Recovery restored explicit precedence — statusOverride → statusBackend → backend — while LOGIN and Transfer stayed on the normal backend, and removed monitoring state from STATUS response control.',
+      openCommit: 'open recovery commit ↗',
+      blackCaseAria: 'Regression black case',
+      protocolStrong: 'Parse only what is needed to route.',
+      protocolBody: 'Normal Java traffic reads the initial handshake for host identity and next state, forwards the original bytes, then stops interpreting gameplay traffic.',
+      routeStrong: 'Kubernetes discovery feeds routing; it does not redefine routing semantics.',
+      routeBody: 'Static YAML and discovered Services converge on the same route model so the network core remains testable independently of the cluster control plane.',
+      controlStrong: 'Optional control integrations cannot become implicit route truth.',
+      controlBody: 'Scaler hooks, availability observations and Hub notifications can consume or emit control-plane information without silently changing the selected backend.',
+      platformHeader: 'This evidence is operational rather than a public repository: a real cluster with explicit limits and rebuildable layers.',
+      hostConstraint: 'current constraint / not HA',
+      vmLifecycle: 'VM lifecycle boundary',
+      cp: 'cluster control / etcd',
+      worker: 'application workloads',
+      rebuildStrong: 'From guided install to repeatable procedure.',
+      rebuildBody: 'The platform stopped being a one-off lab once I could destroy and rebuild it myself and write installation procedures for other operators. Reproducibility became part of the platform definition.',
+      realStrong: 'Minecraft and web applications share one operating model.',
+      realBody: 'Stateful game servers and ordinary web services are reconciled by the same cluster while keeping their storage, network and shutdown requirements explicit at the workload boundary.',
+      limitationStrong: 'Logical separation is not physical availability.',
+      limitationBody: 'cp-01 and worker-01 are separate VMs, but one physical host still owns the failure domain. The topology is designed to expand without presenting the current machine as an HA cluster.',
+      proves: 'WHAT THIS LAYER PROVES',
+      provesBody: 'The projects are not architecture diagrams assembled after the fact. Their invariants show up in persisted state, executable failure cases, recovery commits and infrastructure I have to keep operating.',
+      next: '04 / live runtime',
+      nextDetail: 'the running portfolio process becomes evidence next',
+    };
 ---
 
 <section id="evidence" class="evidence-layer shell" data-evidence-layer aria-labelledby="evidence-title">
   <header class="evidence-heading evidence-reveal">
-    <div>
-      <span class="evidence-index">03 / evidence & operation</span>
-      <h2 id="evidence-title">Design claims are cheap.<br />Operational evidence is not.</h2>
-    </div>
-    <p>
-      This layer ties the previous case studies to concrete repository artifacts, regression history and the runtime
-      topology I actually operate. The goal is not to dump implementation details; it is to show where each design
-      principle becomes enforceable.
-    </p>
+    <div><span class="evidence-index">{c.index}</span><h2 id="evidence-title">{c.title1}<br />{c.title2}</h2></div>
+    <p>{c.intro}</p>
   </header>
 
-  <div class="evidence-trace evidence-reveal" aria-label="Evidence flow">
-    <span>claim</span><i></i><span>implementation</span><i></i><span>failure</span><i></i><span>operation</span>
-  </div>
-
-  <button class="density-expand evidence-reveal" type="button" data-view-mode-inspect>
-    <span>inspect</span>
-    <strong>secondary implementation records / regression cases / operational notes</strong>
-    <i aria-hidden="true">↓</i>
-  </button>
+  <div class="evidence-trace evidence-reveal" aria-label="Evidence flow"><span>{c.flow[0]}</span><i></i><span>{c.flow[1]}</span><i></i><span>{c.flow[2]}</span><i></i><span>{c.flow[3]}</span></div>
+  <button class="density-expand evidence-reveal" type="button" data-view-mode-inspect><span>{c.inspect}</span><strong>{c.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
 
   <article class="evidence-system evidence-reveal" id="evidence-minecartainer">
-    <header class="evidence-system-header">
-      <div>
-        <span class="evidence-kind">01 / STATEFUL RUNTIME</span>
-        <h3>Minecartainer</h3>
-      </div>
-      <p>Persistent-state safety is represented by state records, explicit transitions and tests that expect refusal.</p>
-    </header>
-
+    <header class="evidence-system-header"><div><span class="evidence-kind">01 / STATEFUL RUNTIME</span><h3>Minecartainer</h3></div><p>{c.mineHeader}</p></header>
     <div class="evidence-grid">
-      <a class="evidence-record evidence-record-primary" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/docs/server-install-reinstall-policy.md">
-        <span class="record-type">STATE CONTRACT</span>
-        <code>/data/.server-install.json</code>
-        <strong>Configuration drift fails before managed state is replaced.</strong>
-        <p>
-          The marker records <code>artifact</code>, <code>type</code>, <code>version</code> and <code>build</code>. A valid
-          mismatch fails by default; <code>FORCE_REINSTALL=true</code> is an explicit operator decision and still does not
-          delete worlds, mods, plugins or configuration.
-        </p>
-        <small>server-install-reinstall-policy.md ↗</small>
-      </a>
-
-      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install_phase.sh">
-        <span class="record-type">LIFECYCLE</span>
-        <code>install()</code>
-        <strong>Installation is an explicit phase, not an accidental side effect of every boot.</strong>
-        <p>
-          Server artifacts, worlds, mods, datapacks, configs and plugins pass through a named install pipeline with
-          pre/post boundaries before the runtime takes over.
-        </p>
-        <small>scripts/lib/install_phase.sh ↗</small>
-      </a>
-
-      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/.github/workflows/runtime-smoke.yml">
-        <span class="record-type">REGRESSION SURFACE</span>
-        <code>runtime-smoke.yml</code>
-        <strong>Failure paths are executable specifications.</strong>
-        <p>
-          Runtime CI exercises lifecycle regressions such as install-only behavior, RCON safety, managed marker
-          mismatches, bring-your-own artifacts and ownership-sensitive modpack behavior.
-        </p>
-        <small>GitHub Actions workflow ↗</small>
-      </a>
-
-      <div class="evidence-record evidence-record-observed" data-inspect-detail>
-        <span class="record-type">KUBERNETES OPERATION</span>
-        <code>single writer → graceful stop</code>
-        <strong>The world outlives the Pod.</strong>
-        <p>
-          Maintained deployment patterns use persistent storage, conservative replacement, readiness and a bounded
-          Minecraft-aware shutdown path instead of treating the JVM as disposable state.
-        </p>
-        <small>operational model / documented in repository</small>
-      </div>
+      <a class="evidence-record evidence-record-primary" href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/docs/server-install-reinstall-policy.md"><span class="record-type">STATE CONTRACT</span><code>/data/.server-install.json</code><strong>{c.markerStrong}</strong><p>{c.markerBody}</p><small>server-install-reinstall-policy.md ↗</small></a>
+      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/scripts/lib/install_phase.sh"><span class="record-type">LIFECYCLE</span><code>install()</code><strong>{c.lifecycleStrong}</strong><p>{c.lifecycleBody}</p><small>scripts/lib/install_phase.sh ↗</small></a>
+      <a class="evidence-record" data-inspect-detail href="https://github.com/AlexanderGG-0520/minecartainer/blob/main/.github/workflows/runtime-smoke.yml"><span class="record-type">REGRESSION SURFACE</span><code>runtime-smoke.yml</code><strong>{c.regressionStrong}</strong><p>{c.regressionBody}</p><small>GitHub Actions workflow ↗</small></a>
+      <div class="evidence-record evidence-record-observed" data-inspect-detail><span class="record-type">KUBERNETES OPERATION</span><code>single writer → graceful stop</code><strong>{c.operationStrong}</strong><p>{c.operationBody}</p><small>{ja ? '運用model / repositoryにdocument済み' : 'operational model / documented in repository'}</small></div>
     </div>
   </article>
 
   <article class="evidence-system evidence-reveal" id="evidence-mc-router">
-    <header class="evidence-system-header">
-      <div>
-        <span class="evidence-kind">02 / NETWORK EDGE</span>
-        <h3>mc-router</h3>
-      </div>
-      <p>The strongest evidence is not a feature list. It is a production regression that changed the architecture.</p>
-    </header>
-
+    <header class="evidence-system-header"><div><span class="evidence-kind">02 / NETWORK EDGE</span><h3>mc-router</h3></div><p>{c.routerHeader}</p></header>
     <div class="incident-record" data-incident-record>
-      <div class="incident-meta">
-        <span>RECOVERY COMMIT</span>
-        <code>36c75dc</code>
-        <time datetime="2026-08-23">2026-08-23</time>
-      </div>
-      <div class="incident-copy">
-        <span class="incident-state">STATUS ROUTING REGRESSION → RESPONSIBILITY BOUNDARY</span>
-        <h4>Restore Java routing semantics and observability.</h4>
-        <p>
-          Router-owned monitoring state had started influencing Minecraft STATUS behavior. Recovery restored explicit
-          precedence — <code>statusOverride → statusBackend → backend</code> — while LOGIN and Transfer stayed on the
-          normal backend, and removed monitoring state from STATUS response control.
-        </p>
-        <a href="https://github.com/AlexanderGG-0520/mc-router/commit/36c75dcb9535a3f5f173cd19f45587490884940e">open recovery commit ↗</a>
-      </div>
-      <div class="incident-black-case" data-inspect-detail aria-label="Regression black case">
-        <span>BLACK CASE</span>
-        <p><b>STATUS</b> canonical host → statusBackend</p>
-        <p><b>LOGIN</b> explicit alias → normal backend</p>
-        <p><b>FALLBACK</b> must not overwrite healthy statusBackend</p>
-      </div>
+      <div class="incident-meta"><span>RECOVERY COMMIT</span><code>36c75dc</code><time datetime="2026-08-23">2026-08-23</time></div>
+      <div class="incident-copy"><span class="incident-state">{c.incidentState}</span><h4>{c.incidentTitle}</h4><p>{c.incidentBody}</p><a href="https://github.com/AlexanderGG-0520/mc-router/commit/36c75dcb9535a3f5f173cd19f45587490884940e">{c.openCommit}</a></div>
+      <div class="incident-black-case" data-inspect-detail aria-label={c.blackCaseAria}><span>BLACK CASE</span><p><b>STATUS</b> canonical host → statusBackend</p><p><b>LOGIN</b> explicit alias → normal backend</p><p><b>FALLBACK</b> must not overwrite healthy statusBackend</p></div>
     </div>
-
     <div class="evidence-grid evidence-grid-router" data-inspect-detail>
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#how-java-routing-works">
-        <span class="record-type">PROTOCOL BOUNDARY</span>
-        <code>handshake → opaque TCP</code>
-        <strong>Parse only what is needed to route.</strong>
-        <p>
-          Normal Java traffic reads the initial handshake for host identity and next state, forwards the original bytes,
-          then stops interpreting gameplay traffic.
-        </p>
-        <small>routing model ↗</small>
-      </a>
-
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#explicit-yaml-first-discovery-second">
-        <span class="record-type">ROUTE MODEL</span>
-        <code>static + discovered → snapshot</code>
-        <strong>Kubernetes discovery feeds routing; it does not redefine routing semantics.</strong>
-        <p>
-          Static YAML and discovered Services converge on the same route model so the network core remains testable
-          independently of the cluster control plane.
-        </p>
-        <small>design rationale ↗</small>
-      </a>
-
-      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#keep-workload-lifecycle-outside-routing-correctness">
-        <span class="record-type">CONTROL BOUNDARY</span>
-        <code>route decision ≠ lifecycle authority</code>
-        <strong>Optional control integrations cannot become implicit route truth.</strong>
-        <p>
-          Scaler hooks, availability observations and Hub notifications can consume or emit control-plane information
-          without silently changing the selected backend.
-        </p>
-        <small>responsibility boundary ↗</small>
-      </a>
+      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#how-java-routing-works"><span class="record-type">PROTOCOL BOUNDARY</span><code>handshake → opaque TCP</code><strong>{c.protocolStrong}</strong><p>{c.protocolBody}</p><small>{ja ? 'routing model ↗' : 'routing model ↗'}</small></a>
+      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#explicit-yaml-first-discovery-second"><span class="record-type">ROUTE MODEL</span><code>static + discovered → snapshot</code><strong>{c.routeStrong}</strong><p>{c.routeBody}</p><small>{ja ? '設計理由 ↗' : 'design rationale ↗'}</small></a>
+      <a class="evidence-record" href="https://github.com/AlexanderGG-0520/mc-router#keep-workload-lifecycle-outside-routing-correctness"><span class="record-type">CONTROL BOUNDARY</span><code>route decision ≠ lifecycle authority</code><strong>{c.controlStrong}</strong><p>{c.controlBody}</p><small>{ja ? '責務境界 ↗' : 'responsibility boundary ↗'}</small></a>
     </div>
   </article>
 
   <article class="evidence-system evidence-reveal" id="evidence-home-platform">
-    <header class="evidence-system-header">
-      <div>
-        <span class="evidence-kind">03 / INFRASTRUCTURE</span>
-        <h3>Home Kubernetes Platform</h3>
-      </div>
-      <p>This evidence is operational rather than a public repository: a real cluster with explicit limits and rebuildable layers.</p>
-    </header>
-
-    <div class="runtime-topology" aria-label="Current home platform runtime topology">
-      <div class="runtime-host">
-        <span>PHYSICAL FAILURE DOMAIN</span>
-        <strong>1 host</strong>
-        <small>current constraint / not HA</small>
-      </div>
+    <header class="evidence-system-header"><div><span class="evidence-kind">03 / INFRASTRUCTURE</span><h3>Home Kubernetes Platform</h3></div><p>{c.platformHeader}</p></header>
+    <div class="runtime-topology" aria-label={ja ? '現在のHome Platform runtime topology' : 'Current home platform runtime topology'}>
+      <div class="runtime-host"><span>PHYSICAL FAILURE DOMAIN</span><strong>1 host</strong><small>{c.hostConstraint}</small></div>
       <div class="runtime-arrow" aria-hidden="true">↓</div>
-      <div class="runtime-layer runtime-proxmox">
-        <span>VIRTUALIZATION</span>
-        <strong>Proxmox VE</strong>
-        <small>VM lifecycle boundary</small>
-      </div>
+      <div class="runtime-layer runtime-proxmox"><span>VIRTUALIZATION</span><strong>Proxmox VE</strong><small>{c.vmLifecycle}</small></div>
       <div class="runtime-arrow" aria-hidden="true">↓</div>
-      <div class="runtime-vms">
-        <div><span>CONTROL PLANE VM</span><strong>cp-01</strong><small>cluster control / etcd</small></div>
-        <div><span>WORKER VM</span><strong>worker-01</strong><small>application workloads</small></div>
-      </div>
+      <div class="runtime-vms"><div><span>CONTROL PLANE VM</span><strong>cp-01</strong><small>{c.cp}</small></div><div><span>WORKER VM</span><strong>worker-01</strong><small>{c.worker}</small></div></div>
       <div class="runtime-arrow" aria-hidden="true">↓</div>
-      <div class="runtime-layer runtime-kubernetes">
-        <span>APPLICATION PLATFORM</span>
-        <strong>Kubernetes</strong>
-        <div class="runtime-services">
-          <i>Cilium / network</i><i>Longhorn / storage</i><i>Argo CD / delivery</i><i>CRI-O / runtime</i>
-        </div>
-      </div>
+      <div class="runtime-layer runtime-kubernetes"><span>APPLICATION PLATFORM</span><strong>Kubernetes</strong><div class="runtime-services"><i>Cilium / network</i><i>Longhorn / storage</i><i>Argo CD / delivery</i><i>CRI-O / runtime</i></div></div>
     </div>
-
     <div class="operation-ledger" data-inspect-detail>
-      <section>
-        <span>REBUILDABILITY</span>
-        <strong>From guided install to repeatable procedure.</strong>
-        <p>
-          The platform stopped being a one-off lab once I could destroy and rebuild it myself and write installation
-          procedures for other operators. Reproducibility became part of the platform definition.
-        </p>
-      </section>
-      <section>
-        <span>REAL WORKLOADS</span>
-        <strong>Minecraft and web applications share one operating model.</strong>
-        <p>
-          Stateful game servers and ordinary web services are reconciled by the same cluster while keeping their
-          storage, network and shutdown requirements explicit at the workload boundary.
-        </p>
-      </section>
-      <section>
-        <span>LIMITATION</span>
-        <strong>Logical separation is not physical availability.</strong>
-        <p>
-          cp-01 and worker-01 are separate VMs, but one physical host still owns the failure domain. The topology is
-          designed to expand without presenting the current machine as an HA cluster.
-        </p>
-      </section>
+      <section><span>REBUILDABILITY</span><strong>{c.rebuildStrong}</strong><p>{c.rebuildBody}</p></section>
+      <section><span>REAL WORKLOADS</span><strong>{c.realStrong}</strong><p>{c.realBody}</p></section>
+      <section><span>LIMITATION</span><strong>{c.limitationStrong}</strong><p>{c.limitationBody}</p></section>
     </div>
   </article>
 
-  <div class="evidence-principle evidence-reveal">
-    <span>WHAT THIS LAYER PROVES</span>
-    <p>
-      The projects are not architecture diagrams assembled after the fact. Their invariants show up in persisted state,
-      executable failure cases, recovery commits and infrastructure I have to keep operating.
-    </p>
-  </div>
-
-  <div class="evidence-next evidence-reveal">
-    <span>04 / live runtime</span>
-    <i></i>
-    <span>the running portfolio process becomes evidence next</span>
-  </div>
+  <div class="evidence-principle evidence-reveal"><span>{c.proves}</span><p>{c.provesBody}</p></div>
+  <div class="evidence-next evidence-reveal"><span>{c.next}</span><i></i><span>{c.nextDetail}</span></div>
 </section>
 
 <script>
