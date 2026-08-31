@@ -56,7 +56,7 @@ const c = ja
       <button type="button" data-view-mode-toggle aria-pressed="false" aria-label={ja ? '詳細表示に切り替える' : 'Switch to inspect view'} data-view-mode-skim-aria={ja ? '要約表示に切り替える' : 'Switch to skim view'} data-view-mode-inspect-aria={ja ? '詳細表示に切り替える' : 'Switch to inspect view'}>
         <span>view</span><strong data-view-mode-label>skim</strong><small>{c.viewDetail}</small><i aria-hidden="true">⇄</i>
       </button>
-      <button type="button" data-terminal-open data-mobile-nav-terminal><span>tty</span><strong>terminal ~</strong><small>{c.terminalDetail}</small><i aria-hidden="true">❯</i></button>
+      <button type="button" data-terminal-open data-mobile-nav-terminal aria-controls="portfolio-terminal" aria-haspopup="dialog" aria-expanded="false"><span>tty</span><strong>terminal ~</strong><small>{c.terminalDetail}</small><i aria-hidden="true">❯</i></button>
       <a href={`/${otherLocale}/`} hreflang={otherLocale} data-mobile-nav-link><span>lang</span><strong>{c.language}</strong><small>{c.languageDetail}</small><i aria-hidden="true">↔</i></a>
       <a href="https://github.com/AlexanderGG-0520" rel="me" data-mobile-nav-link><span>git</span><strong>github</strong><small>{c.githubDetail}</small><i aria-hidden="true">↗</i></a>
     </div>
