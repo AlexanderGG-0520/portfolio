@@ -1,288 +1,249 @@
 ---
+import type { Locale } from '../i18n/locales';
 import '../styles/case-studies.css';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const ja = lang === 'ja';
+
+const common = ja
+  ? {
+      index: '02 / case studies',
+      title1: 'ここから、',
+      title2: 'アーキテクチャを具体化する。',
+      intro: '各責務境界を、実際に起きた問題・設計判断・デプロイ後も維持し続ける運用へ辿ると、同じシステムがより具体的に見えてきます。',
+      featuredAria: '主要Case Study',
+      inspect: 'inspect',
+      inspectDetail: '起点 / 問題 / 設計判断 / 運用',
+      coreQuestion: 'CORE QUESTION',
+      demonstrates: 'DEMONSTRATES',
+      source: 'source ↗',
+      next: '03 / evidence & operation',
+      nextDetail: 'さらに実装と運用の証拠へ',
+    }
+  : {
+      index: '02 / case studies',
+      title1: 'The architecture',
+      title2: 'becomes concrete here.',
+      intro: 'The same operating system is easier to understand when each responsibility boundary is traced back to a real problem, a design decision, and something that has to keep working after deployment.',
+      featuredAria: 'Featured case studies',
+      inspect: 'inspect',
+      inspectDetail: 'origin / problem / design decisions / operation',
+      coreQuestion: 'CORE QUESTION',
+      demonstrates: 'DEMONSTRATES',
+      source: 'source ↗',
+      next: '03 / evidence & operation',
+      nextDetail: 'deeper implementation follows',
+    };
+
+const mine = ja
+  ? {
+      navKind: '01 / stateful runtime',
+      navDetail: '永続stateの安全性',
+      kind: '01 / stateful workload lifecycle',
+      summary: '「containerは置き換えられるが、永続化されたworldはそうではない」という非対称性を中心に設計したMinecraft Java Server Container Image。',
+      question: '使い捨てruntimeを自動化しながら、その自動化が長期保存stateを不用意に変更しないようにするには？',
+      originTitle: 'forkを維持するのではなく、独立して作る。',
+      origin: '直接のきっかけは実用上の問題でした。公式のitzg imageにはC2ME OCLで必要だった専用のOpenCL対応runtimeがなく、Kubernetes上でのmod deliveryも扱いづらくなっていました。長期的なforkを抱える代わりに独立imageを作り、自分の運用モデルに合わせて発展させました。',
+      problemTitle: '起動時の便利な自動化は、永続stateのリスクにもなる。',
+      problem: 'KubernetesはPodを日常的に置き換えますが、Minecraft worldはその置き換えを何百回も跨いで残ります。暗黙の再install、推測したownership、破壊的mirror、タイミングの悪いshutdownは、containerよりはるかに価値の高いstateを壊しかねません。',
+      designTitle: '危険なstate transitionを明示的で観測可能にする。',
+      bullets: [
+        '毎回の起動を初期化扱いにせず、installation phaseとruntime phaseを分離する。',
+        'managed installation stateを記録し、互換性のない設定では置換前にfailする。',
+        'mods・plugins・configurationはS3-compatibleな独立delivery lifecycleで扱う。',
+        'Kubernetesのtermination budget内でMinecraft-awareなRCON save/stopを行う。',
+        'GPU/OpenCL対応targetを含め、Java runtime targetを明示的にpublishする。',
+      ],
+      operationTitle: '失敗時の挙動もruntime contractの一部。',
+      operation: '運用しているKubernetes patternでは、persistent volume、single writer、保守的なreplacement、明示的なreadiness、時間制限付きのgraceful shutdownを前提にしています。CIも成功時だけでなくunsafe/ambiguous stateを検証し、「拒否することが正解」のケースをcontractとして固定します。',
+      invariantLabel: 'OPERATIONAL INVARIANT',
+      invariant: 'Containerは使い捨てとして扱う。Worldは価値ある永続stateとして扱う。',
+      demonstrates: 'Stateful workload design · container lifecycle · Kubernetes semantics · failure-oriented testing',
+    }
+  : {
+      navKind: '01 / stateful runtime',
+      navDetail: 'persistent-state safety',
+      kind: '01 / stateful workload lifecycle',
+      summary: 'A Minecraft Java server container image designed around a simple asymmetry: containers are replaceable; persistent worlds are not.',
+      question: 'How do I automate a disposable runtime without letting that automation casually mutate long-lived state?',
+      originTitle: 'Build independently instead of maintaining a fork.',
+      origin: 'The immediate trigger was practical: the official itzg image did not provide the dedicated OpenCL-capable runtime I needed for a C2ME OCL setup, while delivering mods into Kubernetes was becoming cumbersome. Rather than carry a long-lived fork, I started an independent image and let it evolve around my own operating model.',
+      problemTitle: 'Startup convenience can become persistent-state risk.',
+      problem: 'Kubernetes replaces Pods routinely, but a Minecraft world may survive hundreds of those replacements. Implicit reinstall logic, guessed ownership, destructive mirroring, or a badly timed shutdown can therefore damage state that is far more valuable than the container running it.',
+      designTitle: 'Make dangerous transitions explicit and inspectable.',
+      bullets: [
+        'Separate installation from runtime instead of treating every start as initialization.',
+        'Record managed installation state and fail on incompatible configuration before replacement.',
+        'Keep mods, plugins and configuration on an independent S3-compatible delivery lifecycle.',
+        'Use Minecraft-aware RCON save/stop semantics inside Kubernetes termination budgets.',
+        'Publish explicit Java runtime targets, including a separate GPU/OpenCL-capable target.',
+      ],
+      operationTitle: 'Failure behavior is part of the runtime contract.',
+      operation: 'The maintained Kubernetes patterns assume persistent volumes, a single writer, conservative replacement, explicit readiness and bounded graceful shutdown. CI exercises unsafe and ambiguous states as well as the successful boot path, because rejecting an operation can be the correct result.',
+      invariantLabel: 'OPERATIONAL INVARIANT',
+      invariant: 'Treat the container as disposable. Treat the world as valuable.',
+      demonstrates: 'Stateful workload design · container lifecycle · Kubernetes semantics · failure-oriented testing',
+    };
+
+const router = ja
+  ? {
+      navKind: '02 / network edge',
+      navDetail: '責務境界の安全性',
+      kind: '02 / protocol-aware network edge',
+      summary: '複数の独立backendに1つのpublic entry pointを与えつつ、edge processがgameplay session全体を所有しない軽量Minecraft gateway。',
+      question: 'routing・monitoring・lifecycle機能が増えていく中で、routerは何を所有してよいのか？',
+      originTitle: '1つのpublic endpoint、複数の独立workload。',
+      origin: 'Kubernetes上の複数Minecraft serverを独立したworkloadのまま、標準public portを共有させたかったのが出発点です。serverごとにpublic portを増やす、全serverを大きなgameplay proxyへ依存させる、各server containerへrouting責務を埋め込む、のどれもこのモデルでは責務の置き場所が違いました。',
+      problemTitle: '便利な運用機能がroutingを静かに再定義してしまう。',
+      problem: '最初のhostname routerは小さいものでした。しかしKubernetes discovery、STATUS、monitoring、Transfer、Bedrock、voice routing、lifecycle hookが増えるにつれて、難しい問題は「各判断のsource of truthをどのcomponentが持つか」を守ることへ変わりました。',
+      designTitle: '責務に必要な深さまでだけprotocolを理解する。',
+      bullets: [
+        'Java handshakeだけを読んでbackendを選び、その後のTCP streamはopaqueにproxyする。',
+        'static YAMLとKubernetes discoveryを同じroute snapshot modelへ流し込む。',
+        'monitoring stateを暗黙のrouting authorityにしない。',
+        'workload lifecycle controlをroute correctnessの外に置く。',
+        'opaque forwardingでは不足する場合にだけ、より深いprotocol-aware componentを追加する。',
+      ],
+      operationTitle: 'production regressionが境界をさらに厳密にした。',
+      operation: '現在はSTATUSとLOGINの挙動を意図的に分離しています。STATUSには明示的なprecedenceがあり、LOGINとTransferは通常backendを使い続けます。実際に起きたSTATUS routing regressionから、「観測されたavailabilityがplayer trafficのsource of truthへ黙って昇格してはいけない」というルールを設計へ固定しました。',
+      invariantLabel: 'DESIGN INVARIANT',
+      invariant: 'Monitoringはrouting stateを説明してよい。routing stateを黙って再定義してはならない。',
+      demonstrates: 'Go networking · protocol design · concurrency · observability · explicit responsibility boundaries',
+    }
+  : {
+      navKind: '02 / network edge',
+      navDetail: 'responsibility-boundary safety',
+      kind: '02 / protocol-aware network edge',
+      summary: 'A lightweight Minecraft gateway that gives independent backends one public entry point without making the edge process own the entire gameplay session.',
+      question: 'What is the router actually allowed to own as routing, monitoring and lifecycle features keep growing?',
+      originTitle: 'One public endpoint, several independent workloads.',
+      origin: 'I wanted multiple Minecraft servers on Kubernetes to remain separate workloads while sharing the standard public port. Exposing a new public port per server, forcing every server behind a larger gameplay proxy, or embedding routing into every server container all put the responsibility in the wrong place for that model.',
+      problemTitle: 'Useful operational features can silently redefine routing.',
+      problem: 'The first hostname router was small. As Kubernetes discovery, STATUS behavior, monitoring, Transfer, Bedrock, voice routing and lifecycle hooks appeared, the harder problem became preserving which component was the source of truth for each decision.',
+      designTitle: 'Inspect protocol only as deeply as the responsibility requires.',
+      bullets: [
+        'Read the Java handshake to select a backend, then proxy the remaining TCP stream opaquely.',
+        'Feed static YAML and Kubernetes discovery into the same route-snapshot model.',
+        'Keep monitoring state from implicitly becoming routing authority.',
+        'Keep workload lifecycle control external to route correctness.',
+        'Add deeper protocol-aware components only where opaque forwarding is genuinely insufficient.',
+      ],
+      operationTitle: 'Production regressions tightened the boundary.',
+      operation: 'STATUS and LOGIN behavior are now deliberately separated: explicit STATUS controls have a defined precedence, while LOGIN and Transfer keep using the normal backend. A production STATUS-routing regression reinforced the rule that observed availability must not silently become the source of truth for player traffic.',
+      invariantLabel: 'DESIGN INVARIANT',
+      invariant: 'Monitoring may describe routing state. It must not silently redefine routing state.',
+      demonstrates: 'Go networking · protocol design · concurrency · observability · explicit responsibility boundaries',
+    };
+
+const platform = ja
+  ? {
+      navKind: '03 / infrastructure',
+      navDetail: '再現可能な運用',
+      kind: '03 / infrastructure & operations',
+      summary: 'これらのprojectを実際に動かす基盤。自分で管理するhardware上で、virtualization、cluster lifecycle、network、storage、GitOpsまで運用しています。',
+      question: '1台の物理serverを、infrastructureとworkloadが別々のlifecycleを持つplatformへどう変えるか？',
+      originTitle: 'containerへの興味が、基盤全体の作り直しにつながった。',
+      origin: 'Minecraft serverをopenSUSEで運用していた中でDockerを知り、Compose V2を使おうとしましたが、その環境では実用上かなり扱いづらい状態でした。悩む中でKubernetesを知り、本番運用に向く仕組みだと理解しました。どうせopenSUSE上でComposeやKubernetesを無理に成立させるなら、Proxmox + Kubernetesへ基盤ごと乗り換える方が筋が良いと判断しました。',
+      problemTitle: '1台の物理machineでも、lifecycleまで1つにする必要はない。',
+      problem: 'Minecraft server、web application、storage、ingress、platform serviceは、それぞれreplacementやfailureの意味が違います。bare-metalのsingle-node Kubernetesでも動かせますが、Control Plane・application workload・host maintenanceが同じlifecycle boundaryへ結合され続けます。',
+      designTitle: '物理scaleを増やす前に、layerを分離する。',
+      bullets: [
+        'Kubernetesの下にProxmoxを置き、virtualization boundaryを作る。',
+        '現在は1台の物理hostでも、Control PlaneとWorkerを別VMに分ける。',
+        'Minecraftとweb workloadの共通運用modelとしてKubernetes reconciliationを使う。',
+        'network / storage / delivery / runtimeをCilium、Longhorn、Argo CD、CRI-Oへ分担する。',
+        '物理nodeを追加しても現在のmodelを捨てずに拡張できるtopologyにする。',
+      ],
+      operationTitle: '学習の終点を一度きりのinstallではなく、再現可能性に置いた。',
+      operation: '最初は教わりながらclusterを構築し、その後は運用と再構築を繰り返して、自分だけでplatformを作り直し、他の人向けの導入手順まで書ける状態にしました。現在は実際のMinecraft・web workloadを動かしています。ただし物理hardwareはまだ1 failure domainなので、VM分離をHAとは扱っていません。',
+      invariantLabel: 'PLATFORM PRINCIPLE',
+      invariant: 'まずlifecycle boundaryを分ける。物理failure domainはhardwareが増えたときに追加する。',
+      demonstrates: 'Platform engineering · Kubernetes operations · virtualization · GitOps · storage & network design',
+      sourceMuted: 'running system / public infra repositoryなし',
+    }
+  : {
+      navKind: '03 / infrastructure',
+      navDetail: 'reproducible operations',
+      kind: '03 / infrastructure & operations',
+      summary: 'The operating platform underneath these projects: virtualization, cluster lifecycle, networking, storage and GitOps on hardware I actually administer.',
+      question: 'How do I turn one physical server into a platform whose infrastructure and workloads have separate lifecycles?',
+      originTitle: 'A container experiment turned into a platform rebuild.',
+      origin: 'While running Minecraft on openSUSE, I discovered Docker and tried to adopt Compose V2. That path was awkward enough in the environment I had that I started looking at alternatives and found Kubernetes. If the platform was going to be rebuilt anyway, Proxmox + Kubernetes was more compelling than stacking a single-node control plane and all application workloads directly onto the host OS.',
+      problemTitle: 'One physical machine should not mean one undifferentiated lifecycle.',
+      problem: 'Minecraft servers, web applications, storage, ingress and platform services all need different replacement and failure semantics. A bare-metal all-in-one node would work, but it would couple the Control Plane, application workloads and host maintenance into the same lifecycle boundary.',
+      designTitle: 'Separate layers before adding physical scale.',
+      bullets: [
+        'Use Proxmox as the virtualization boundary beneath Kubernetes.',
+        'Run Control Plane and Worker roles in separate VMs even on the current single physical host.',
+        'Use Kubernetes reconciliation as the common operating model for Minecraft and web workloads.',
+        'Assign networking, storage, delivery and runtime responsibilities to Cilium, Longhorn, Argo CD and CRI-O.',
+        'Keep the topology extensible so additional physical nodes do not require abandoning the current model.',
+      ],
+      operationTitle: 'The learning loop ended in reproducibility, not a one-off install.',
+      operation: 'I first built the cluster with guidance, then kept operating and rebuilding it until I could reconstruct the platform myself and write deployment procedures for other people. Today it runs real Minecraft and web workloads. The current hardware is still one failure domain, so the design does not pretend that VM separation is high availability.',
+      invariantLabel: 'PLATFORM PRINCIPLE',
+      invariant: 'Separate lifecycle boundaries now; add physical failure domains when the hardware grows.',
+      demonstrates: 'Platform engineering · Kubernetes operations · virtualization · GitOps · storage & network design',
+      sourceMuted: 'running system / no public infra repository',
+    };
 ---
 
 <section id="case-studies" class="case-studies-layer shell" data-case-studies aria-labelledby="case-studies-title">
   <header class="case-studies-heading case-reveal">
     <div>
-      <span class="case-index-label">02 / case studies</span>
-      <h2 id="case-studies-title">The architecture<br />becomes concrete here.</h2>
+      <span class="case-index-label">{common.index}</span>
+      <h2 id="case-studies-title">{common.title1}<br />{common.title2}</h2>
     </div>
-
-    <p>
-      The same operating system is easier to understand when each responsibility boundary is traced back to a real
-      problem, a design decision, and something that has to keep working after deployment.
-    </p>
+    <p>{common.intro}</p>
   </header>
 
-  <nav class="case-index case-reveal" aria-label="Featured case studies">
-    <a href="#case-minecartainer" data-case-target="case-minecartainer">
-      <span>01 / stateful runtime</span>
-      <strong>Minecartainer</strong>
-      <small>persistent-state safety</small>
-      <i aria-hidden="true">↓</i>
-    </a>
-    <a href="#case-mc-router" data-case-target="case-mc-router">
-      <span>02 / network edge</span>
-      <strong>mc-router</strong>
-      <small>responsibility-boundary safety</small>
-      <i aria-hidden="true">↓</i>
-    </a>
-    <a href="#case-home-platform" data-case-target="case-home-platform">
-      <span>03 / infrastructure</span>
-      <strong>Home Kubernetes Platform</strong>
-      <small>reproducible operations</small>
-      <i aria-hidden="true">↓</i>
-    </a>
+  <nav class="case-index case-reveal" aria-label={common.featuredAria}>
+    <a href="#case-minecartainer" data-case-target="case-minecartainer"><span>{mine.navKind}</span><strong>Minecartainer</strong><small>{mine.navDetail}</small><i aria-hidden="true">↓</i></a>
+    <a href="#case-mc-router" data-case-target="case-mc-router"><span>{router.navKind}</span><strong>mc-router</strong><small>{router.navDetail}</small><i aria-hidden="true">↓</i></a>
+    <a href="#case-home-platform" data-case-target="case-home-platform"><span>{platform.navKind}</span><strong>Home Kubernetes Platform</strong><small>{platform.navDetail}</small><i aria-hidden="true">↓</i></a>
   </nav>
 
   <article id="case-minecartainer" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header">
-      <div>
-        <span class="case-study-kind">01 / stateful workload lifecycle</span>
-        <h3>Minecartainer</h3>
-        <p class="case-study-summary">
-          A Minecraft Java server container image designed around a simple asymmetry: containers are replaceable;
-          persistent worlds are not.
-        </p>
-      </div>
-
-      <div class="case-study-question">
-        <span>CORE QUESTION</span>
-        <p>How do I automate a disposable runtime without letting that automation casually mutate long-lived state?</p>
-      </div>
-    </header>
-
-    <button class="density-expand" type="button" data-view-mode-inspect>
-      <span>inspect</span>
-      <strong>origin / problem / design decisions / operation</strong>
-      <i aria-hidden="true">↓</i>
-    </button>
-
+    <header class="case-study-header"><div><span class="case-study-kind">{mine.kind}</span><h3>Minecartainer</h3><p class="case-study-summary">{mine.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{mine.question}</p></div></header>
+    <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
-      <section>
-        <span>ORIGIN</span>
-        <h4>Build independently instead of maintaining a fork.</h4>
-        <p>
-          The immediate trigger was practical: the official itzg image did not provide the dedicated OpenCL-capable
-          runtime I needed for a C2ME OCL setup, while delivering mods into Kubernetes was becoming cumbersome. Rather
-          than carry a long-lived fork, I started an independent image and let it evolve around my own operating model.
-        </p>
-      </section>
-
-      <section>
-        <span>PROBLEM</span>
-        <h4>Startup convenience can become persistent-state risk.</h4>
-        <p>
-          Kubernetes replaces Pods routinely, but a Minecraft world may survive hundreds of those replacements.
-          Implicit reinstall logic, guessed ownership, destructive mirroring, or a badly timed shutdown can therefore
-          damage state that is far more valuable than the container running it.
-        </p>
-      </section>
-
-      <section>
-        <span>DESIGN DECISIONS</span>
-        <h4>Make dangerous transitions explicit and inspectable.</h4>
-        <ul>
-          <li>Separate installation from runtime instead of treating every start as initialization.</li>
-          <li>Record managed installation state and fail on incompatible configuration before replacement.</li>
-          <li>Keep mods, plugins and configuration on an independent S3-compatible delivery lifecycle.</li>
-          <li>Use Minecraft-aware RCON save/stop semantics inside Kubernetes termination budgets.</li>
-          <li>Publish explicit Java runtime targets, including a separate GPU/OpenCL-capable target.</li>
-        </ul>
-      </section>
-
-      <section>
-        <span>OPERATION</span>
-        <h4>Failure behavior is part of the runtime contract.</h4>
-        <p>
-          The maintained Kubernetes patterns assume persistent volumes, a single writer, conservative replacement,
-          explicit readiness and bounded graceful shutdown. CI exercises unsafe and ambiguous states as well as the
-          successful boot path, because rejecting an operation can be the correct result.
-        </p>
-      </section>
+      <section><span>ORIGIN</span><h4>{mine.originTitle}</h4><p>{mine.origin}</p></section>
+      <section><span>PROBLEM</span><h4>{mine.problemTitle}</h4><p>{mine.problem}</p></section>
+      <section><span>DESIGN DECISIONS</span><h4>{mine.designTitle}</h4><ul>{mine.bullets.map((item) => <li>{item}</li>)}</ul></section>
+      <section><span>OPERATION</span><h4>{mine.operationTitle}</h4><p>{mine.operation}</p></section>
     </div>
-
-    <footer class="case-study-footer">
-      <div class="case-invariant">
-        <span>OPERATIONAL INVARIANT</span>
-        <strong>Treat the container as disposable. Treat the world as valuable.</strong>
-      </div>
-      <div class="case-proof">
-        <span>DEMONSTRATES</span>
-        <p>Stateful workload design · container lifecycle · Kubernetes semantics · failure-oriented testing</p>
-      </div>
-      <a class="case-source" href="https://github.com/AlexanderGG-0520/minecartainer">source ↗</a>
-    </footer>
+    <footer class="case-study-footer"><div class="case-invariant"><span>{mine.invariantLabel}</span><strong>{mine.invariant}</strong></div><div class="case-proof"><span>{common.demonstrates}</span><p>{mine.demonstrates}</p></div><a class="case-source" href="https://github.com/AlexanderGG-0520/minecartainer">{common.source}</a></footer>
   </article>
 
   <article id="case-mc-router" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header">
-      <div>
-        <span class="case-study-kind">02 / protocol-aware network edge</span>
-        <h3>mc-router</h3>
-        <p class="case-study-summary">
-          A lightweight Minecraft gateway that gives independent backends one public entry point without making the
-          edge process own the entire gameplay session.
-        </p>
-      </div>
-
-      <div class="case-study-question">
-        <span>CORE QUESTION</span>
-        <p>What is the router actually allowed to own as routing, monitoring and lifecycle features keep growing?</p>
-      </div>
-    </header>
-
-    <button class="density-expand" type="button" data-view-mode-inspect>
-      <span>inspect</span>
-      <strong>origin / problem / design decisions / operation</strong>
-      <i aria-hidden="true">↓</i>
-    </button>
-
+    <header class="case-study-header"><div><span class="case-study-kind">{router.kind}</span><h3>mc-router</h3><p class="case-study-summary">{router.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{router.question}</p></div></header>
+    <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
-      <section>
-        <span>ORIGIN</span>
-        <h4>One public endpoint, several independent workloads.</h4>
-        <p>
-          I wanted multiple Minecraft servers on Kubernetes to remain separate workloads while sharing the standard
-          public port. Exposing a new public port per server, forcing every server behind a larger gameplay proxy, or
-          embedding routing into every server container all put the responsibility in the wrong place for that model.
-        </p>
-      </section>
-
-      <section>
-        <span>PROBLEM</span>
-        <h4>Useful operational features can silently redefine routing.</h4>
-        <p>
-          The first hostname router was small. As Kubernetes discovery, STATUS behavior, monitoring, Transfer, Bedrock,
-          voice routing and lifecycle hooks appeared, the harder problem became preserving which component was the
-          source of truth for each decision.
-        </p>
-      </section>
-
-      <section>
-        <span>DESIGN DECISIONS</span>
-        <h4>Inspect protocol only as deeply as the responsibility requires.</h4>
-        <ul>
-          <li>Read the Java handshake to select a backend, then proxy the remaining TCP stream opaquely.</li>
-          <li>Feed static YAML and Kubernetes discovery into the same route-snapshot model.</li>
-          <li>Keep monitoring state from implicitly becoming routing authority.</li>
-          <li>Keep workload lifecycle control external to route correctness.</li>
-          <li>Add deeper protocol-aware components only where opaque forwarding is genuinely insufficient.</li>
-        </ul>
-      </section>
-
-      <section>
-        <span>OPERATION</span>
-        <h4>Production regressions tightened the boundary.</h4>
-        <p>
-          STATUS and LOGIN behavior are now deliberately separated: explicit STATUS controls have a defined precedence,
-          while LOGIN and Transfer keep using the normal backend. A production STATUS-routing regression reinforced the
-          rule that observed availability must not silently become the source of truth for player traffic.
-        </p>
-      </section>
+      <section><span>ORIGIN</span><h4>{router.originTitle}</h4><p>{router.origin}</p></section>
+      <section><span>PROBLEM</span><h4>{router.problemTitle}</h4><p>{router.problem}</p></section>
+      <section><span>DESIGN DECISIONS</span><h4>{router.designTitle}</h4><ul>{router.bullets.map((item) => <li>{item}</li>)}</ul></section>
+      <section><span>OPERATION</span><h4>{router.operationTitle}</h4><p>{router.operation}</p></section>
     </div>
-
-    <footer class="case-study-footer">
-      <div class="case-invariant">
-        <span>DESIGN INVARIANT</span>
-        <strong>Monitoring may describe routing state. It must not silently redefine routing state.</strong>
-      </div>
-      <div class="case-proof">
-        <span>DEMONSTRATES</span>
-        <p>Go networking · protocol design · concurrency · observability · explicit responsibility boundaries</p>
-      </div>
-      <a class="case-source" href="https://github.com/AlexanderGG-0520/mc-router">source ↗</a>
-    </footer>
+    <footer class="case-study-footer"><div class="case-invariant"><span>{router.invariantLabel}</span><strong>{router.invariant}</strong></div><div class="case-proof"><span>{common.demonstrates}</span><p>{router.demonstrates}</p></div><a class="case-source" href="https://github.com/AlexanderGG-0520/mc-router">{common.source}</a></footer>
   </article>
 
   <article id="case-home-platform" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header">
-      <div>
-        <span class="case-study-kind">03 / infrastructure & operations</span>
-        <h3>Home Kubernetes Platform</h3>
-        <p class="case-study-summary">
-          The operating platform underneath these projects: virtualization, cluster lifecycle, networking, storage and
-          GitOps on hardware I actually administer.
-        </p>
-      </div>
-
-      <div class="case-study-question">
-        <span>CORE QUESTION</span>
-        <p>How do I turn one physical server into a platform whose infrastructure and workloads have separate lifecycles?</p>
-      </div>
-    </header>
-
-    <button class="density-expand" type="button" data-view-mode-inspect>
-      <span>inspect</span>
-      <strong>origin / problem / design decisions / operation</strong>
-      <i aria-hidden="true">↓</i>
-    </button>
-
+    <header class="case-study-header"><div><span class="case-study-kind">{platform.kind}</span><h3>Home Kubernetes Platform</h3><p class="case-study-summary">{platform.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{platform.question}</p></div></header>
+    <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
-      <section>
-        <span>ORIGIN</span>
-        <h4>A container experiment turned into a platform rebuild.</h4>
-        <p>
-          While running Minecraft on openSUSE, I discovered Docker and tried to adopt Compose V2. That path was awkward
-          enough in the environment I had that I started looking at alternatives and found Kubernetes. If the platform
-          was going to be rebuilt anyway, Proxmox + Kubernetes was more compelling than stacking a single-node control
-          plane and all application workloads directly onto the host OS.
-        </p>
-      </section>
-
-      <section>
-        <span>PROBLEM</span>
-        <h4>One physical machine should not mean one undifferentiated lifecycle.</h4>
-        <p>
-          Minecraft servers, web applications, storage, ingress and platform services all need different replacement
-          and failure semantics. A bare-metal all-in-one node would work, but it would couple the Control Plane,
-          application workloads and host maintenance into the same lifecycle boundary.
-        </p>
-      </section>
-
-      <section>
-        <span>DESIGN DECISIONS</span>
-        <h4>Separate layers before adding physical scale.</h4>
-        <ul>
-          <li>Use Proxmox as the virtualization boundary beneath Kubernetes.</li>
-          <li>Run Control Plane and Worker roles in separate VMs even on the current single physical host.</li>
-          <li>Use Kubernetes reconciliation as the common operating model for Minecraft and web workloads.</li>
-          <li>Assign networking, storage, delivery and runtime responsibilities to Cilium, Longhorn, Argo CD and CRI-O.</li>
-          <li>Keep the topology extensible so additional physical nodes do not require abandoning the current model.</li>
-        </ul>
-      </section>
-
-      <section>
-        <span>OPERATION</span>
-        <h4>The learning loop ended in reproducibility, not a one-off install.</h4>
-        <p>
-          I first built the cluster with guidance, then kept operating and rebuilding it until I could reconstruct the
-          platform myself and write deployment procedures for other people. Today it runs real Minecraft and web
-          workloads. The current hardware is still one failure domain, so the design does not pretend that VM separation
-          is high availability.
-        </p>
-      </section>
+      <section><span>ORIGIN</span><h4>{platform.originTitle}</h4><p>{platform.origin}</p></section>
+      <section><span>PROBLEM</span><h4>{platform.problemTitle}</h4><p>{platform.problem}</p></section>
+      <section><span>DESIGN DECISIONS</span><h4>{platform.designTitle}</h4><ul>{platform.bullets.map((item) => <li>{item}</li>)}</ul></section>
+      <section><span>OPERATION</span><h4>{platform.operationTitle}</h4><p>{platform.operation}</p></section>
     </div>
-
-    <footer class="case-study-footer">
-      <div class="case-invariant">
-        <span>PLATFORM PRINCIPLE</span>
-        <strong>Separate lifecycle boundaries now; add physical failure domains when the hardware grows.</strong>
-      </div>
-      <div class="case-proof">
-        <span>DEMONSTRATES</span>
-        <p>Platform engineering · Kubernetes operations · virtualization · GitOps · storage & network design</p>
-      </div>
-      <span class="case-source case-source-muted">running system / no public infra repository</span>
-    </footer>
+    <footer class="case-study-footer"><div class="case-invariant"><span>{platform.invariantLabel}</span><strong>{platform.invariant}</strong></div><div class="case-proof"><span>{common.demonstrates}</span><p>{platform.demonstrates}</p></div><span class="case-source case-source-muted">{platform.sourceMuted}</span></footer>
   </article>
 
-  <div class="case-studies-next case-reveal" aria-hidden="true">
-    <span>03 / evidence & operation</span>
-    <i></i>
-    <span>deeper implementation follows</span>
-  </div>
+  <div class="case-studies-next case-reveal" aria-hidden="true"><span>{common.next}</span><i></i><span>{common.nextDetail}</span></div>
 </section>
 
 <script>
