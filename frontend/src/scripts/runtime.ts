@@ -1,3 +1,4 @@
+import './browser-scale-stability.ts';
 import './viewport-debug.ts';
 
 const setText = (selector: string, value: string) => {
