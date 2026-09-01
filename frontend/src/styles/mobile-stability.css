@@ -28,6 +28,25 @@ body {
  */
 @media (max-width: 1180px), (hover: none) and (pointer: coarse) {
   /*
+   * The topology field deliberately extends beyond the viewport. Contain that
+   * decorative overflow at the full-width main boundary instead of relying on
+   * `body { overflow-x: hidden }`: WebKit can keep the root scrolling element
+   * horizontally scrollable when an absolutely positioned descendant overflows.
+   *
+   * `hidden` is the compatibility fallback; `clip` avoids creating a horizontal
+   * scroll container where supported.
+   */
+  .home-main {
+    overflow-x: hidden;
+  }
+
+  @supports (overflow: clip) {
+    .home-main {
+      overflow-x: clip;
+    }
+  }
+
+  /*
    * Keep ordinary touch panning and pinch zoom available, but opt out of the
    * browser's double-tap / smart-zoom gesture. The viewport metadata separately
    * prevents zooming out below the authored layout scale while still allowing
