@@ -3,7 +3,18 @@ const touchFirst = window.matchMedia('(hover: none) and (pointer: coarse)');
 const productionPortfolio = document.body.dataset.design === 'c';
 const supportsCssZoom = CSS.supports('zoom', '1');
 
-if (visualViewport && touchFirst.matches && productionPortfolio && supportsCssZoom) {
+/*
+ * This compensator exists for Chromium's Android desktop-mode platform scaling.
+ * WebKit can expose the same VisualViewport / CSS zoom primitives while using a
+ * different viewport model, so capability detection alone is not a sufficient
+ * activation guard. Keep the workaround engine/platform-specific.
+ */
+const userAgent = navigator.userAgent;
+const android = /Android/i.test(userAgent);
+const chromiumEngine = /(?:Chrome|Chromium|EdgA|Edg|OPR|SamsungBrowser)\//i.test(userAgent);
+const androidChromium = android && chromiumEngine;
+
+if (visualViewport && androidChromium && touchFirst.matches && productionPortfolio && supportsCssZoom) {
   const touchPointers = new Set<number>();
   let platformScale = Math.min(1, Math.max(0.5, visualViewport.scale || 1));
   let userScale = 1;
