@@ -56,7 +56,7 @@ test.describe('portfolio browser smoke', () => {
     await expect(viewToggle).toHaveAttribute('aria-pressed', 'false');
 
     const terminalOpener = page.locator('.home-nav [data-terminal-open]');
-    const terminal = page.locator('[data-terminal]');
+    const terminal = page.locator('.terminal-drawer[data-terminal]');
     const terminalInput = page.locator('[data-terminal-input]');
 
     await terminalOpener.click();
@@ -82,7 +82,7 @@ test.describe('portfolio browser smoke', () => {
     await expectNoHorizontalOverflow(page);
 
     const opener = page.locator('[data-mobile-nav-open]');
-    const layer = page.locator('[data-mobile-nav]');
+    const layer = page.locator('.mobile-nav-layer[data-mobile-nav]');
 
     await expect(opener).toBeVisible();
     await opener.click();
