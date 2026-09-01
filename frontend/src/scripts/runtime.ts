@@ -1,5 +1,8 @@
 import './browser-scale-stability.ts';
-import './viewport-debug.ts';
+
+if (new URLSearchParams(window.location.search).get('debugViewport') === '1') {
+  void import('./viewport-debug.ts');
+}
 
 const setText = (selector: string, value: string) => {
   document.querySelectorAll<HTMLElement>(selector).forEach((node) => {
