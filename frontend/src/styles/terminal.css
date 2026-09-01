@@ -122,6 +122,27 @@
   color: var(--subtext-1);
 }
 
+.terminal-url {
+  color: var(--blue);
+  text-decoration: underline;
+  text-decoration-color: rgb(137 180 250 / .42);
+  text-underline-offset: .16em;
+  cursor: pointer;
+  transition: color .14s var(--ease), text-decoration-color .14s var(--ease);
+}
+
+.terminal-url:hover,
+.terminal-url:focus-visible {
+  color: var(--text);
+  text-decoration-color: var(--blue);
+}
+
+.terminal-url:focus-visible {
+  outline: 1px solid rgb(137 180 250 / .72);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .terminal-drawer .terminal-error {
   color: var(--red);
 }
