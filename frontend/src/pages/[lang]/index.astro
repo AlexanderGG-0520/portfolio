@@ -16,6 +16,7 @@ import '../../styles/mobile-navigation.css';
 import '../../styles/progressive-disclosure.css';
 import '../../styles/polish.css';
 import '../../styles/mobile-stability.css';
+import '../../styles/presentation-signals.css';
 
 export function getStaticPaths() {
   return supportedLocales.map((lang) => ({ params: { lang }, props: { lang } }));
@@ -40,6 +41,11 @@ const c = ja
       hero1: 'コードから、', hero2: '稼働するシステムまで。',
       thesis: 'ソフトウェアを、実際に動かすinfrastructureまで含めた一つのシステムとして設計・実装・運用しています。',
       actionsAria: 'トップページの操作', trace: 'アーキテクチャを辿る', openTerminal: 'terminalを開く',
+      proofAria: '人物・実績・運用の要約',
+      proofIdentity: 'identity', proofIdentityValue: 'Alec / AlexanderGG-0520',
+      proofOss: 'public oss', proofOssValue: 'Minecartainer · 20k+ image pulls',
+      proofOperated: 'operated', proofOperatedValue: 'mc-router · production',
+      proofPlatform: 'this site', proofPlatformValue: 'Astro + Go · Kubernetes / GitOps',
       fieldAria: 'Alecのsoftware system layer',
       routerKind: '01 / edge', routerDetail: 'tcp · Java handshake · :25565',
       kubeKind: '02 / platform', kubeDetail: 'reconcile · network · storage',
@@ -59,6 +65,11 @@ const c = ja
       hero1: 'From code', hero2: 'to running system.',
       thesis: 'I build software as complete systems, through the infrastructure that runs them.',
       actionsAria: 'Homepage actions', trace: 'trace architecture', openTerminal: 'open terminal',
+      proofAria: 'Identity, external evidence and operating signals',
+      proofIdentity: 'identity', proofIdentityValue: 'Alec / AlexanderGG-0520',
+      proofOss: 'public oss', proofOssValue: 'Minecartainer · 20k+ image pulls',
+      proofOperated: 'operated', proofOperatedValue: 'mc-router · production',
+      proofPlatform: 'this site', proofPlatformValue: 'Astro + Go · Kubernetes / GitOps',
       fieldAria: "Alec's software system layers",
       routerKind: '01 / edge', routerDetail: 'tcp · java handshake · :25565',
       kubeKind: '02 / platform', kubeDetail: 'reconcile · network · storage',
@@ -99,6 +110,12 @@ const c = ja
           <a class="terminal-link" href="#architecture" data-architecture-trigger>{c.trace} <span>→</span></a>
           <button class="terminal-link" type="button" data-terminal-open aria-controls="portfolio-terminal" aria-haspopup="dialog" aria-expanded="false">{c.openTerminal} <span>_</span></button>
         </div>
+        <dl class="hero-evidence" data-hero-evidence aria-label={c.proofAria}>
+          <div><dt>{c.proofIdentity}</dt><dd>{c.proofIdentityValue}</dd></div>
+          <div><dt>{c.proofOss}</dt><dd>{c.proofOssValue}</dd></div>
+          <div><dt>{c.proofOperated}</dt><dd>{c.proofOperatedValue}</dd></div>
+          <div><dt>{c.proofPlatform}</dt><dd>{c.proofPlatformValue}</dd></div>
+        </dl>
       </div>
 
       <div id="system" class="system-field" aria-label={c.fieldAria}>

@@ -23,12 +23,25 @@ async function expectHeroGeometry(page: Page) {
   expect(box.height).toBeLessThan(viewport.height);
 }
 
+async function expectPresentationSignals(page: Page) {
+  const heroEvidence = page.locator('[data-hero-evidence]');
+  await expect(heroEvidence).toBeVisible();
+  await expect(heroEvidence).toContainText('Alec / AlexanderGG-0520');
+  await expect(heroEvidence).toContainText('Minecartainer · 20k+ image pulls');
+  await expect(heroEvidence).toContainText('mc-router · production');
+
+  await expect(page.locator('[data-case-signal="minecartainer"]')).toContainText('20k+ published image pulls');
+  await expect(page.locator('[data-case-signal="mc-router"]')).toContainText('production-operated');
+  await expect(page.locator('[data-case-signal="platform"]')).toContainText('1 physical failure domain');
+}
+
 test.describe('portfolio browser smoke', () => {
   for (const locale of ['en', 'ja'] as const) {
     test(`${locale}: desktop layout and runtime stay healthy`, async ({ page }) => {
       await page.goto(`/${locale}/`);
 
       await expectHeroGeometry(page);
+      await expectPresentationSignals(page);
       await expectNoHorizontalOverflow(page);
 
       const runtime = page.locator('[data-live-runtime]');
@@ -79,6 +92,7 @@ test.describe('portfolio browser smoke', () => {
     await page.goto('/en/');
 
     await expectHeroGeometry(page);
+    await expect(page.locator('[data-hero-evidence]')).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
     const opener = page.locator('[data-mobile-nav-open]');

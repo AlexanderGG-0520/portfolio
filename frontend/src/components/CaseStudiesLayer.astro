@@ -45,6 +45,8 @@ const mine = ja
       navDetail: '永続stateの安全性',
       kind: '01 / stateful workload lifecycle',
       summary: '「containerは置き換えられるが、永続化されたworldはそうではない」という非対称性を中心に設計したMinecraft Java Server Container Image。',
+      signalLabel: 'PUBLIC ADOPTION',
+      signal: '20k+ published image pulls · public OCI distribution',
       question: '使い捨てruntimeを自動化しながら、その自動化が長期保存stateを不用意に変更しないようにするには？',
       originTitle: 'forkを維持するのではなく、独立して作る。',
       origin: '直接のきっかけは実用上の問題でした。公式のitzg imageにはC2ME OCLで必要だった専用のOpenCL対応runtimeがなく、Kubernetes上でのmod deliveryも扱いづらくなっていました。長期的なforkを抱える代わりに独立imageを作り、自分の運用モデルに合わせて発展させました。',
@@ -69,6 +71,8 @@ const mine = ja
       navDetail: 'persistent-state safety',
       kind: '01 / stateful workload lifecycle',
       summary: 'A Minecraft Java server container image designed around a simple asymmetry: containers are replaceable; persistent worlds are not.',
+      signalLabel: 'PUBLIC ADOPTION',
+      signal: '20k+ published image pulls · public OCI distribution',
       question: 'How do I automate a disposable runtime without letting that automation casually mutate long-lived state?',
       originTitle: 'Build independently instead of maintaining a fork.',
       origin: 'The immediate trigger was practical: the official itzg image did not provide the dedicated OpenCL-capable runtime I needed for a C2ME OCL setup, while delivering mods into Kubernetes was becoming cumbersome. Rather than carry a long-lived fork, I started an independent image and let it evolve around my own operating model.',
@@ -95,6 +99,8 @@ const router = ja
       navDetail: '責務境界の安全性',
       kind: '02 / protocol-aware network edge',
       summary: '複数の独立backendに1つのpublic entry pointを与えつつ、edge processがgameplay session全体を所有しない軽量Minecraft gateway。',
+      signalLabel: 'PRODUCTION OPERATION',
+      signal: 'production-operated · STATUS / LOGIN regression hardened',
       question: 'routing・monitoring・lifecycle機能が増えていく中で、routerは何を所有してよいのか？',
       originTitle: '1つのpublic endpoint、複数の独立workload。',
       origin: 'Kubernetes上の複数Minecraft serverを独立したworkloadのまま、標準public portを共有させたかったのが出発点です。serverごとにpublic portを増やす、全serverを大きなgameplay proxyへ依存させる、各server containerへrouting責務を埋め込む、のどれもこのモデルでは責務の置き場所が違いました。',
@@ -119,6 +125,8 @@ const router = ja
       navDetail: 'responsibility-boundary safety',
       kind: '02 / protocol-aware network edge',
       summary: 'A lightweight Minecraft gateway that gives independent backends one public entry point without making the edge process own the entire gameplay session.',
+      signalLabel: 'PRODUCTION OPERATION',
+      signal: 'production-operated · STATUS / LOGIN regression hardened',
       question: 'What is the router actually allowed to own as routing, monitoring and lifecycle features keep growing?',
       originTitle: 'One public endpoint, several independent workloads.',
       origin: 'I wanted multiple Minecraft servers on Kubernetes to remain separate workloads while sharing the standard public port. Exposing a new public port per server, forcing every server behind a larger gameplay proxy, or embedding routing into every server container all put the responsibility in the wrong place for that model.',
@@ -145,6 +153,8 @@ const platform = ja
       navDetail: '再現可能な運用',
       kind: '03 / infrastructure & operations',
       summary: 'これらのprojectを実際に動かす基盤。自分で管理するhardware上で、virtualization、cluster lifecycle、network、storage、GitOpsまで運用しています。',
+      signalLabel: 'RUNNING PLATFORM',
+      signal: 'Minecraft + web workloads · 1 physical failure domain',
       question: '1台の物理serverを、infrastructureとworkloadが別々のlifecycleを持つplatformへどう変えるか？',
       originTitle: 'containerへの興味が、基盤全体の作り直しにつながった。',
       origin: 'Minecraft serverをopenSUSEで運用していた中でDockerを知り、Compose V2を使おうとしましたが、その環境では実用上かなり扱いづらい状態でした。悩む中でKubernetesを知り、本番運用に向く仕組みだと理解しました。どうせopenSUSE上でComposeやKubernetesを無理に成立させるなら、Proxmox + Kubernetesへ基盤ごと乗り換える方が筋が良いと判断しました。',
@@ -170,6 +180,8 @@ const platform = ja
       navDetail: 'reproducible operations',
       kind: '03 / infrastructure & operations',
       summary: 'The operating platform underneath these projects: virtualization, cluster lifecycle, networking, storage and GitOps on hardware I actually administer.',
+      signalLabel: 'RUNNING PLATFORM',
+      signal: 'Minecraft + web workloads · 1 physical failure domain',
       question: 'How do I turn one physical server into a platform whose infrastructure and workloads have separate lifecycles?',
       originTitle: 'A container experiment turned into a platform rebuild.',
       origin: 'While running Minecraft on openSUSE, I discovered Docker and tried to adopt Compose V2. That path was awkward enough in the environment I had that I started looking at alternatives and found Kubernetes. If the platform was going to be rebuilt anyway, Proxmox + Kubernetes was more compelling than stacking a single-node control plane and all application workloads directly onto the host OS.',
@@ -208,7 +220,7 @@ const platform = ja
   </nav>
 
   <article id="case-minecartainer" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header"><div><span class="case-study-kind">{mine.kind}</span><h3>Minecartainer</h3><p class="case-study-summary">{mine.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{mine.question}</p></div></header>
+    <header class="case-study-header"><div><span class="case-study-kind">{mine.kind}</span><h3>Minecartainer</h3><p class="case-study-summary">{mine.summary}</p><p class="case-study-signal" data-case-signal="minecartainer"><span>{mine.signalLabel}</span><strong>{mine.signal}</strong></p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{mine.question}</p></div></header>
     <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
       <section><span>ORIGIN</span><h4>{mine.originTitle}</h4><p>{mine.origin}</p></section>
@@ -220,7 +232,7 @@ const platform = ja
   </article>
 
   <article id="case-mc-router" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header"><div><span class="case-study-kind">{router.kind}</span><h3>mc-router</h3><p class="case-study-summary">{router.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{router.question}</p></div></header>
+    <header class="case-study-header"><div><span class="case-study-kind">{router.kind}</span><h3>mc-router</h3><p class="case-study-summary">{router.summary}</p><p class="case-study-signal" data-case-signal="mc-router"><span>{router.signalLabel}</span><strong>{router.signal}</strong></p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{router.question}</p></div></header>
     <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
       <section><span>ORIGIN</span><h4>{router.originTitle}</h4><p>{router.origin}</p></section>
@@ -232,7 +244,7 @@ const platform = ja
   </article>
 
   <article id="case-home-platform" class="case-study case-reveal" data-case-study>
-    <header class="case-study-header"><div><span class="case-study-kind">{platform.kind}</span><h3>Home Kubernetes Platform</h3><p class="case-study-summary">{platform.summary}</p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{platform.question}</p></div></header>
+    <header class="case-study-header"><div><span class="case-study-kind">{platform.kind}</span><h3>Home Kubernetes Platform</h3><p class="case-study-summary">{platform.summary}</p><p class="case-study-signal" data-case-signal="platform"><span>{platform.signalLabel}</span><strong>{platform.signal}</strong></p></div><div class="case-study-question"><span>{common.coreQuestion}</span><p>{platform.question}</p></div></header>
     <button class="density-expand" type="button" data-view-mode-inspect><span>{common.inspect}</span><strong>{common.inspectDetail}</strong><i aria-hidden="true">↓</i></button>
     <div class="case-study-details" data-inspect-detail>
       <section><span>ORIGIN</span><h4>{platform.originTitle}</h4><p>{platform.origin}</p></section>
