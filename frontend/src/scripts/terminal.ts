@@ -253,10 +253,16 @@ function appendTerminalText(parent: HTMLElement, text: string) {
       link.addEventListener('click', (event) => {
         event.stopPropagation();
 
-        // Pointer activation mirrors terminal URL handling: plain left click keeps
-        // the session in place, while Ctrl/Cmd+click opens the recognized URL.
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          window.open(link.href, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
         // Keyboard activation has detail=0 and keeps normal anchor semantics.
-        if (event.detail === 0 || event.ctrlKey || event.metaKey) return;
+        // A plain pointer click stays inside the terminal; middle-click is an
+        // auxclick event and therefore keeps the browser's native new-tab path.
+        if (event.detail === 0) return;
         event.preventDefault();
       });
       parent.append(link);
