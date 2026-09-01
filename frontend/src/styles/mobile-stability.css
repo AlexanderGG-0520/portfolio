@@ -27,6 +27,16 @@ body {
  * change wrapping and visible area; it must not become a zoom control.
  */
 @media (max-width: 1180px), (hover: none) and (pointer: coarse) {
+  /*
+   * Keep ordinary touch panning and pinch zoom available, but opt out of the
+   * browser's double-tap / smart-zoom gesture. The viewport metadata separately
+   * prevents zooming out below the authored layout scale while still allowing
+   * accessibility zoom-in.
+   */
+  .site-surface {
+    touch-action: manipulation;
+  }
+
   .home-hero {
     min-height: 48rem;
     align-content: start;
