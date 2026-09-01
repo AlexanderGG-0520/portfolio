@@ -226,11 +226,66 @@ function appendPrompt(command: string, promptCWD: string) {
   output.append(row);
 }
 
+const terminalURLPattern = /https?:\/\/[^\s<>"'`]+/g;
+
+function appendTerminalText(parent: HTMLElement, text: string) {
+  let offset = 0;
+
+  for (const match of text.matchAll(terminalURLPattern)) {
+    const start = match.index ?? 0;
+    const rawURL = match[0];
+
+    if (start > offset) parent.append(document.createTextNode(text.slice(offset, start)));
+
+    try {
+      const url = new URL(rawURL);
+      if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new Error('unsupported URL protocol');
+
+      const link = document.createElement('a');
+      link.className = 'terminal-url';
+      link.dataset.terminalUrl = '';
+      link.href = url.href;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = rawURL;
+      link.title = 'Ctrl/Cmd+Click to open in a new tab';
+      link.setAttribute('aria-label', `${rawURL} — open in a new tab`);
+      link.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault();
+          window.open(link.href, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
+        // Keyboard activation has detail=0 and keeps normal anchor semantics.
+        // A plain pointer click stays inside the terminal; middle-click is an
+        // auxclick event and therefore keeps the browser's native new-tab path.
+        if (event.detail === 0) return;
+        event.preventDefault();
+      });
+      parent.append(link);
+    } catch {
+      parent.append(document.createTextNode(rawURL));
+    }
+
+    offset = start + rawURL.length;
+  }
+
+  if (offset < text.length) parent.append(document.createTextNode(text.slice(offset)));
+}
+
 function appendLines(lines: string[], exitCode = 0) {
   if (!output || lines.length === 0) return;
   const block = document.createElement('pre');
   block.className = exitCode === 0 ? 'terminal-message terminal-response' : 'terminal-message terminal-error';
-  block.textContent = lines.join('\n');
+
+  lines.forEach((line, index) => {
+    if (index > 0) block.append(document.createTextNode('\n'));
+    appendTerminalText(block, line);
+  });
+
   output.append(block);
 }
 

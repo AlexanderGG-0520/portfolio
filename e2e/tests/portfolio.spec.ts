@@ -51,7 +51,14 @@ test.describe('portfolio browser smoke', () => {
     });
   }
 
-  test('desktop controls preserve view mode and terminal focus contracts', async ({ page }) => {
+  test('desktop controls preserve view mode and terminal focus contracts', async ({ page, context }) => {
+    await context.route('https://github.com/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><title>terminal-link-target</title>',
+      });
+    });
     await page.goto('/en/');
 
     const root = page.locator('html');
@@ -80,6 +87,25 @@ test.describe('portfolio browser smoke', () => {
     await terminalInput.fill('runtime');
     await terminalInput.press('Enter');
     await expect(page.locator('[data-terminal-output]')).toContainText('GET /api/runtime');
+
+    await terminalInput.fill('github');
+    await terminalInput.press('Enter');
+
+    const terminalURL = page.locator('[data-terminal-url]').last();
+    await expect(terminalURL).toHaveText('https://github.com/AlexanderGG-0520');
+    await expect(terminalURL).toHaveAttribute('href', 'https://github.com/AlexanderGG-0520');
+    await expect(terminalURL).toHaveAttribute('target', '_blank');
+
+    const currentURL = page.url();
+    await terminalURL.click();
+    await expect(page).toHaveURL(currentURL);
+
+    const popupPromise = page.waitForEvent('popup');
+    await terminalURL.click({ modifiers: ['Control'] });
+    const githubPage = await popupPromise;
+    await githubPage.waitForLoadState('domcontentloaded');
+    expect(githubPage.url()).toMatch(/^https:\/\/github\.com\/AlexanderGG-0520\/?$/);
+    await githubPage.close();
 
     await page.keyboard.press('Escape');
     await expect(terminal).toHaveAttribute('data-open', 'false');
